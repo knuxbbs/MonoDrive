@@ -9,8 +9,6 @@ namespace ODrive.Sharp.Gtk
         [UI] private Label _label1 = null;
         [UI] private Button _button1 = null;
 
-        private int _counter;
-
         public MainWindow() : this(new Builder("MainWindow.glade"))
         {
         }
@@ -30,8 +28,10 @@ namespace ODrive.Sharp.Gtk
 
         private void Button1_Clicked(object sender, EventArgs a)
         {
-            _counter++;
-            _label1.Text = "Hello World! This button has been clicked " + _counter + " time(s).";
+            var quickstart = new GoogleDriveQuickStart();
+            quickstart.Run();
+            
+            _label1.Text = "Sync data.";
         }
     }
 }
