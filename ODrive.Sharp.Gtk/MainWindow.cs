@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Gtk;
 using UI = Gtk.Builder.ObjectAttribute;
 
@@ -28,10 +29,24 @@ namespace ODrive.Sharp.Gtk
 
         private void Button1_Clicked(object sender, EventArgs a)
         {
-            var quickstart = new GoogleDriveQuickStart();
-            quickstart.Run();
+//            var quickstart = new QuickStart();
+//            quickstart.Run();
+
+            var chooserDialog = new FileChooserDialog("Choose a folder", this,
+                FileChooserAction.SelectFolder,
+                "Cancel", ResponseType.Cancel,
+                "Open", ResponseType.Accept);
+
+            string folderName = null;
             
-            _label1.Text = "Sync data.";
+            if (chooserDialog.Run() == (int)ResponseType.Accept) 
+            {
+                folderName = chooserDialog.Filename;
+            }
+
+            chooserDialog.Destroy();
+            
+            _label1.Text = folderName ?? "Sync data.";
         }
     }
 }

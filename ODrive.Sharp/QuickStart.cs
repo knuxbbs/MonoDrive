@@ -1,15 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Threading;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Drive.v3;
-using Google.Apis.Services;
-using Google.Apis.Util.Store;
 
 namespace ODrive.Sharp
 {
-    public class GoogleDriveQuickStart : GoogleDrive
+    public class QuickStart : GoogleDrive
     {
         public void Run()
         {
