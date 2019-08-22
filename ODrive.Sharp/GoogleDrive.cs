@@ -72,8 +72,6 @@ namespace ODrive.Sharp
             // List files.
             var files = listRequest.Execute().Files;
 
-            var count = 0;
-            
             // Download files
             await Task.WhenAll(files.Select(async x =>
             {
@@ -88,7 +86,7 @@ namespace ODrive.Sharp
                 {
                     await request.DownloadAsync(memoryStream);
 
-                    var filePath = Path.Combine(_folderPath, $"file{count++}");
+                    var filePath = Path.Combine(_folderPath, x.Name);
                     
                     using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                     {
