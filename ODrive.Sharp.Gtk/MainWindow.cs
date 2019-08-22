@@ -27,7 +27,7 @@ namespace ODrive.Sharp.Gtk
             _button2.Clicked += async (s, e) =>
             {                    
                 await Button2_Clicked(s, e);
-            };;
+            };
         }
 
         private void Window_DeleteEvent(object sender, DeleteEventArgs a)
@@ -57,7 +57,7 @@ namespace ODrive.Sharp.Gtk
             _label1.Text = folderPath ?? "Sync data.";
         }
         
-        private async Task Button2_Clicked(object sender, EventArgs a)
+        private async void Button2_Clicked(object sender, EventArgs a)
         {
             var isQualified = System.IO.Path.IsPathFullyQualified(_label1.Text);
 
