@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Gtk;
 using UI = Gtk.Builder.ObjectAttribute;
 
@@ -9,6 +10,7 @@ namespace ODrive.Sharp.Gtk
     {
         [UI] private Label _label1 = null;
         [UI] private Button _button1 = null;
+        [UI] private Button _button2 = null;
 
         public MainWindow() : this(new Builder("MainWindow.glade"))
         {
@@ -19,7 +21,13 @@ namespace ODrive.Sharp.Gtk
             builder.Autoconnect(this);
 
             DeleteEvent += Window_DeleteEvent;
+            
             _button1.Clicked += Button1_Clicked;
+            
+            _button2.Clicked += async (s, e) =>
+            {                    
+                await Button2_Clicked(s, e);
+            };;
         }
 
         private void Window_DeleteEvent(object sender, DeleteEventArgs a)
@@ -37,16 +45,28 @@ namespace ODrive.Sharp.Gtk
                 "Cancel", ResponseType.Cancel,
                 "Open", ResponseType.Accept);
 
-            string folderName = null;
+            string folderPath = null;
             
             if (chooserDialog.Run() == (int)ResponseType.Accept) 
             {
-                folderName = chooserDialog.Filename;
+                folderPath = chooserDialog.Filename;
             }
 
             chooserDialog.Destroy();
             
-            _label1.Text = folderName ?? "Sync data.";
+            _label1.Text = folderPath ?? "Sync data.";
+        }
+        
+        private async Task Button2_Clicked(object sender, EventArgs a)
+        {
+            var isQualified = System.IO.Path.IsPathFullyQualified(_label1.Text);
+
+            if (isQualified)
+            {
+                var drive = new GoogleDrive();
+
+                await drive.Sync(_label1.Text);     
+            }
         }
     }
 }
