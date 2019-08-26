@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 
-namespace ODrive.Sharp
+namespace ODrive.Sharp.Application
 {
-    public class QuickStart : GoogleDrive
+    public class QuickStart : GoogleDriveService
     {
         public void Run()
         {

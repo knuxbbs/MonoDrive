@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ODrive.Sharp\ODrive.Sharp.Application.csproj" />
+    <ProjectReference Include="..\ODrive.Sharp.Application\ODrive.Sharp.Application.csproj" />
   </ItemGroup>
 
 </Project>

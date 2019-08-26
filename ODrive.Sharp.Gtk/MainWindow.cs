@@ -2,15 +2,22 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Gtk;
+using ODrive.Sharp.Application;
 using UI = Gtk.Builder.ObjectAttribute;
 
 namespace ODrive.Sharp.Gtk
 {
     class MainWindow : Window
     {
-        [UI] private Label _label1 = null;
-        [UI] private Button _button1 = null;
-        [UI] private Button _button2 = null;
+        [UI] private readonly Label _userLabel = null;
+        [UI] private readonly Label _folderLabel = null;
+        [UI] private readonly Button _loginButton = null;
+        [UI] private readonly FileChooserButton _fileChooser = null;
+        [UI] private readonly Button _syncButton = null;
+        [UI] private readonly ProgressBar _progressBar = null;
+
+        private readonly GoogleDriveService _driveService;
+        private IProgress<FolderStructureDownloadProgressChangedEventArgs> _progressReporter;
 
         public MainWindow() : this(new Builder("MainWindow.glade"))
         {
@@ -18,55 +25,49 @@ namespace ODrive.Sharp.Gtk
 
         private MainWindow(Builder builder) : base(builder.GetObject("MainWindow").Handle)
         {
+            _driveService = new GoogleDriveService();
+
             builder.Autoconnect(this);
 
+            _loginButton.Clicked += LoginButton_Clicked;
+
+            _fileChooser.Action = FileChooserAction.SelectFolder;
+            _fileChooser.SelectionChanged += FileChooser_SelectionChanged;
+
+            _syncButton.Sensitive = false;
+            _syncButton.Clicked += SyncButton_Clicked;
+
+            _progressReporter = new Progress<FolderStructureDownloadProgressChangedEventArgs>(args =>
+            {
+                _progressBar.Text = $"{args.CompletedFolders} de {args.TotalFolders} diretórios baixados.";
+                _progressBar.Fraction = args.CompletedFolders / (double) args.TotalFolders;
+            });
+
             DeleteEvent += Window_DeleteEvent;
-            
-            _button1.Clicked += Button1_Clicked;
-            
-            _button2.Clicked += async (s, e) =>
-            {                    
-                await Button2_Clicked(s, e);
-            };
+        }
+
+        private async void LoginButton_Clicked(object sender, EventArgs a)
+        {
+            await _driveService.SignIn();
+            _userLabel.Text = _driveService.Email;
+        }
+
+        private void FileChooser_SelectionChanged(object sender, EventArgs a)
+        {
+            var fileChooser = (FileChooserButton) sender;
+
+            _folderLabel.Text = fileChooser.Filename;
+            _syncButton.Sensitive = Directory.Exists(fileChooser.Filename);
+        }
+
+        private async void SyncButton_Clicked(object sender, EventArgs a)
+        {
+            await _driveService.Sync(_fileChooser.Filename);
         }
 
         private void Window_DeleteEvent(object sender, DeleteEventArgs a)
         {
-            Application.Quit();
-        }
-
-        private void Button1_Clicked(object sender, EventArgs a)
-        {
-//            var quickstart = new QuickStart();
-//            quickstart.Run();
-
-            var chooserDialog = new FileChooserDialog("Choose a folder", this,
-                FileChooserAction.SelectFolder,
-                "Cancel", ResponseType.Cancel,
-                "Open", ResponseType.Accept);
-
-            string folderPath = null;
-            
-            if (chooserDialog.Run() == (int)ResponseType.Accept) 
-            {
-                folderPath = chooserDialog.Filename;
-            }
-
-            chooserDialog.Destroy();
-            
-            _label1.Text = folderPath ?? "Sync data.";
-        }
-        
-        private async void Button2_Clicked(object sender, EventArgs a)
-        {
-            var isQualified = System.IO.Path.IsPathFullyQualified(_label1.Text);
-
-            if (isQualified)
-            {
-                var drive = new GoogleDrive();
-
-                await drive.Sync(_label1.Text);     
-            }
+            global::Gtk.Application.Quit();
         }
     }
 }

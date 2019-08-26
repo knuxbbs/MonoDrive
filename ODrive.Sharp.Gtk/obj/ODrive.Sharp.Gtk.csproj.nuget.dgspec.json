@@ -4,72 +4,14 @@
     "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Gtk/ODrive.Sharp.Gtk.csproj": {}
   },
   "projects": {
-    "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Gtk/ODrive.Sharp.Gtk.csproj": {
+    "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Application/ODrive.Sharp.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Gtk/ODrive.Sharp.Gtk.csproj",
-        "projectName": "ODrive.Sharp.Gtk",
-        "projectPath": "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Gtk/ODrive.Sharp.Gtk.csproj",
-        "packagesPath": "/home/knuxbbs/.nuget/packages/",
-        "outputPath": "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Gtk/obj/",
-        "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "/usr/share/dotnet/sdk/NuGetFallbackFolder"
-        ],
-        "configFilePaths": [
-          "/home/knuxbbs/.config/NuGet/NuGet.Config"
-        ],
-        "originalTargetFrameworks": [
-          "netcoreapp2.2"
-        ],
-        "sources": {
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "netcoreapp2.2": {
-            "projectReferences": {
-              "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp/ODrive.Sharp.Application.csproj": {
-                "projectPath": "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp/ODrive.Sharp.Application.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        }
-      },
-      "frameworks": {
-        "netcoreapp2.2": {
-          "dependencies": {
-            "GtkSharp": {
-              "target": "Package",
-              "version": "[3.22.24.*, )"
-            },
-            "Microsoft.NETCore.App": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[2.2.0, )",
-              "autoReferenced": true
-            }
-          },
-          "imports": [
-            "net461"
-          ],
-          "assetTargetFallback": true,
-          "warn": true
-        }
-      }
-    },
-    "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp/ODrive.Sharp.Application.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp/ODrive.Sharp.Application.csproj",
+        "projectUniqueName": "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Application/ODrive.Sharp.Application.csproj",
         "projectName": "ODrive.Sharp.Application",
-        "projectPath": "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp/ODrive.Sharp.Application.csproj",
+        "projectPath": "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Application/ODrive.Sharp.Application.csproj",
         "packagesPath": "/home/knuxbbs/.nuget/packages/",
-        "outputPath": "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp/obj/",
+        "outputPath": "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Application/obj/",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "/usr/share/dotnet/sdk/NuGetFallbackFolder"
@@ -100,6 +42,72 @@
             "Google.Apis.Drive.v3": {
               "target": "Package",
               "version": "[1.40.3.1671, )"
+            },
+            "Google.Apis.Oauth2.v2": {
+              "target": "Package",
+              "version": "[1.40.3.1602, )"
+            },
+            "LiteDB": {
+              "target": "Package",
+              "version": "[4.1.4, )"
+            },
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    },
+    "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Gtk/ODrive.Sharp.Gtk.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Gtk/ODrive.Sharp.Gtk.csproj",
+        "projectName": "ODrive.Sharp.Gtk",
+        "projectPath": "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Gtk/ODrive.Sharp.Gtk.csproj",
+        "packagesPath": "/home/knuxbbs/.nuget/packages/",
+        "outputPath": "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Gtk/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/home/knuxbbs/.config/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {
+              "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Application/ODrive.Sharp.Application.csproj": {
+                "projectPath": "/home/knuxbbs/Projects/ODrive.Sharp/ODrive.Sharp.Application/ODrive.Sharp.Application.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "GtkSharp": {
+              "target": "Package",
+              "version": "[3.22.24.*, )"
             },
             "Microsoft.NETCore.App": {
               "suppressParent": "All",
