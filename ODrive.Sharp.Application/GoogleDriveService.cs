@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -7,12 +8,11 @@ using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Download;
 using Google.Apis.Drive.v3;
+using Google.Apis.Drive.v3.Data;
 using Google.Apis.Oauth2.v2;
 using Google.Apis.Oauth2.v2.Data;
-using Google.Apis.Requests;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
-using LiteDB;
 using FileMode = System.IO.FileMode;
 
 namespace ODrive.Sharp.Application
@@ -44,6 +44,10 @@ namespace ODrive.Sharp.Application
         protected DriveService DriveService => GetDriveService().Result;
 
         private DriveService _driveService;
+
+        private Stopwatch _stopwatch;
+
+        public int RequestsCount = 0;
 
         private async Task<DriveService> GetDriveService()
         {
@@ -96,6 +100,9 @@ namespace ODrive.Sharp.Application
 
             Directory.CreateDirectory(_localRootFolder);
 
+            _stopwatch = new Stopwatch();
+            _stopwatch.Start();
+
             //TODO: Salvar informações e configurações do usuário
             //TODO: Obter estrutura de diretórios
             await DownloadFolderStructure("root",
@@ -116,10 +123,26 @@ namespace ODrive.Sharp.Application
 
             listRequest.Q = query.ToString();
 
-            // List files.
-            var filesList = await listRequest.ExecuteAsync();
+            FileList filesList;
+
+            try
+            {
+                // List files.
+                filesList = await listRequest.ExecuteAsync();
+            }
+            catch
+            {
+                var errorMessage = new StringBuilder($"Requests per second: {RequestsPerSecond}. ")
+                    .AppendFormat($"Requests count: {RequestsCount}. ")
+                    .AppendFormat($"Elapsed time: {_stopwatch.Elapsed.Seconds} seconds.");
+
+                throw new Exception(errorMessage.ToString());
+            }
+
             var files = filesList.Files;
             //PageStreamer<>
+
+            RequestsCount++;
 
             await Task.WhenAll(files.Select(async x =>
             {
@@ -127,8 +150,11 @@ namespace ODrive.Sharp.Application
 
                 Directory.CreateDirectory(localFolderPath);
 
-                await Task.Delay(20);
-                
+                if (IsRequestCountAtMax)
+                {
+                    await Task.Delay(1000);
+                }
+
                 await DownloadFolderStructure(x.Id,
                     localFolderPath);
             }));
@@ -169,6 +195,21 @@ namespace ODrive.Sharp.Application
                 }
             }));
         }
+
+        public float RequestsPerSecond
+        {
+            get
+            {
+                if (_stopwatch != null && _stopwatch.IsRunning)
+                {
+                    return (float) RequestsCount / (_stopwatch.ElapsedMilliseconds * 1000);
+                }
+
+                return 0;
+            }
+        }
+
+        public bool IsRequestCountAtMax => RequestsPerSecond >= 10;
 
         private static void Changed(IDownloadProgress progress)
         {
