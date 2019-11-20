@@ -13,11 +13,12 @@ using Google.Apis.Oauth2.v2;
 using Google.Apis.Oauth2.v2.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
+using ODrive.Sharp.Application.Interfaces;
 using FileMode = System.IO.FileMode;
 
-namespace ODrive.Sharp.Application
+namespace ODrive.Sharp.Application.Services
 {
-    public class GoogleDriveService
+    public class GoogleDriveAppService : IGoogleDriveAppService
     {
         private const string CredPath = "token.json";
 

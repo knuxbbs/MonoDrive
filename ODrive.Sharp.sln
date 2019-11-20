@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODrive.Sharp.Application", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODrive.Sharp.Gtk", "ODrive.Sharp.Gtk\ODrive.Sharp.Gtk.csproj", "{55B57CB0-623B-458A-BAB7-1A5E14B005F1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODrive.Sharp.Infra.IoC", "ODrive.Sharp.Infra.IoC\ODrive.Sharp.Infra.IoC.csproj", "{452132F9-8CDE-4202-8606-0E10422D2297}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{55B57CB0-623B-458A-BAB7-1A5E14B005F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55B57CB0-623B-458A-BAB7-1A5E14B005F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55B57CB0-623B-458A-BAB7-1A5E14B005F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{452132F9-8CDE-4202-8606-0E10422D2297}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{452132F9-8CDE-4202-8606-0E10422D2297}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{452132F9-8CDE-4202-8606-0E10422D2297}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{452132F9-8CDE-4202-8606-0E10422D2297}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

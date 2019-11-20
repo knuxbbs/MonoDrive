@@ -1,13 +1,13 @@
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using Gtk;
 using ODrive.Sharp.Application;
+using ODrive.Sharp.Application.Interfaces;
 using UI = Gtk.Builder.ObjectAttribute;
 
 namespace ODrive.Sharp.Gtk
 {
-    class MainWindow : Window
+    internal class MainWindow : Window
     {
         [UI] private readonly Label _userLabel = null;
         [UI] private readonly Label _folderLabel = null;
@@ -16,17 +16,16 @@ namespace ODrive.Sharp.Gtk
         [UI] private readonly Button _syncButton = null;
         [UI] private readonly ProgressBar _progressBar = null;
 
-        private readonly GoogleDriveService _driveService;
+        private readonly IGoogleDriveAppService _driveAppService;
         private IProgress<FolderStructureDownloadProgressChangedEventArgs> _progressReporter;
 
-        public MainWindow() : this(new Builder("MainWindow.glade"))
+        public MainWindow(IGoogleDriveAppService driveAppService) : this(new Builder("MainWindow.glade"))
         {
+            _driveAppService = driveAppService;
         }
 
         private MainWindow(Builder builder) : base(builder.GetObject("MainWindow").Handle)
         {
-            _driveService = new GoogleDriveService();
-
             builder.Autoconnect(this);
 
             _loginButton.Clicked += LoginButton_Clicked;
@@ -48,8 +47,8 @@ namespace ODrive.Sharp.Gtk
 
         private async void LoginButton_Clicked(object sender, EventArgs a)
         {
-            await _driveService.SignIn();
-            _userLabel.Text = _driveService.Email;
+            await _driveAppService.SignIn();
+            //_userLabel.Text = _driveAppService.Email;
         }
 
         private void FileChooser_SelectionChanged(object sender, EventArgs a)
@@ -62,7 +61,7 @@ namespace ODrive.Sharp.Gtk
 
         private async void SyncButton_Clicked(object sender, EventArgs a)
         {
-            await _driveService.Sync(_fileChooser.Filename);
+            await _driveAppService.Sync(_fileChooser.Filename);
         }
 
         private void Window_DeleteEvent(object sender, DeleteEventArgs a)

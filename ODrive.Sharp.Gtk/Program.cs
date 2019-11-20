@@ -1,15 +1,18 @@
 using System;
+using System.Linq;
 using GLib;
 using Gtk;
+using Microsoft.Extensions.DependencyInjection;
+using ODrive.Sharp.Infra.IoC;
 
 namespace ODrive.Sharp.Gtk
 {
     class Program
     {
-        private static MainWindow _window;
+        private static IServiceProvider ServiceProvider { get; set; }
 
         [STAThread]
-        public static void Main(string[] args)
+        static void Main(string[] args)
         {
             global::Gtk.Application.Init();
 
@@ -17,14 +20,24 @@ namespace ODrive.Sharp.Gtk
             var app = new global::Gtk.Application("com.knuxbbs.odrive", ApplicationFlags.None);
             app.Register(Cancellable.Current);
 
-            _window = new MainWindow();
-            app.AddWindow(_window);
-
             // Bind any unhandled exceptions in the GTK UI so that they are logged.
             ExceptionManager.UnhandledException += OnGLibUnhandledException;
 
-            _window.Show();
+            var services = new ServiceCollection();
+            RegisterServices(services);
+            ServiceProvider = services.BuildServiceProvider();
+            
+            app.AddWindow(ServiceProvider.GetService<MainWindow>());
+
+            app.Windows.Single().Show();
             global::Gtk.Application.Run();
+        }
+
+        private static void RegisterServices(IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddTransient<MainWindow>();
+
+            NativeInjectorBootstrapper.RegisterServices(serviceCollection);
         }
 
         /// <summary>
@@ -35,7 +48,7 @@ namespace ODrive.Sharp.Gtk
         {
             if (args.ExceptionObject is Exception unhandledException)
             {
-                var dialog = new Dialog("Error", _window,
+                var dialog = new Dialog("Error", ServiceProvider.GetService<MainWindow>(),
                     DialogFlags.Modal | DialogFlags.DestroyWithParent,
                     "Okay", ResponseType.Ok);
 
@@ -43,8 +56,8 @@ namespace ODrive.Sharp.Gtk
 
                 dialog.ShowAll();
                 dialog.Run();
-                
-                dialog.Destroy();
+
+                //dialog.Destroy();
                 dialog.Dispose();
             }
         }
