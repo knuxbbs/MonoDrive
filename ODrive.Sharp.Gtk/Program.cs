@@ -27,9 +27,10 @@ namespace ODrive.Sharp.Gtk
             RegisterServices(services);
             ServiceProvider = services.BuildServiceProvider();
             
-            app.AddWindow(ServiceProvider.GetService<MainWindow>());
-
-            app.Windows.Single().Show();
+            var mainWindow = ServiceProvider.GetService<MainWindow>();
+            app.AddWindow(mainWindow);
+            mainWindow.Show();
+            
             global::Gtk.Application.Run();
         }
 

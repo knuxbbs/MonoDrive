@@ -4,7 +4,7 @@ using ODrive.Sharp.Application.Services;
 
 namespace ODrive.Sharp.Application
 {
-    public class QuickStart : GoogleDriveAppService
+    public class QuickStart : GoogleDrivePresenter
     {
         public void Run()
         {
