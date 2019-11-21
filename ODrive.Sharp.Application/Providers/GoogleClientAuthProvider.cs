@@ -22,7 +22,12 @@ namespace ODrive.Sharp.Application.Services
             using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
             {
                 return await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
+                    new ClientSecrets
+                    {
+                        ClientId = "PUT_CLIENT_ID_HERE",
+                        ClientSecret = "PUT_CLIENT_SECRETS_HERE"
+                    },
+                    //GoogleClientSecrets.Load(stream).Secrets,
                     Scopes,
                     "user",
                     CancellationToken.None,
