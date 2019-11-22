@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
+using Google.Apis.Drive.v3;
 using ODrive.Sharp.Application.Services;
 
 namespace ODrive.Sharp.Application
 {
-    public class QuickStart : GoogleDrivePresenter
+    public class QuickStart
     {
         public void Run()
         {

@@ -1,21 +1,23 @@
+using System;
 using System.Threading.Tasks;
 using Google.Apis.Oauth2.v2;
 using ODrive.Sharp.Application.Interfaces;
 
-namespace ODrive.Sharp.Application.Providers
+namespace ODrive.Sharp.Application.Services
 {
     public class GoogleOAuthAppService : IGoogleOAuthAppService
     {
-        private readonly Oauth2Service _oauth2Service;
+        private readonly Lazy<Task<Oauth2Service>> _oauth2Service;
 
-        public GoogleOAuthAppService(IGoogleApisServiceProvider serviceProvider)
+        public GoogleOAuthAppService(IGoogleApiServiceProvider serviceProvider)
         {
-            _oauth2Service = serviceProvider.Oauth2Service;
+            _oauth2Service = new Lazy<Task<Oauth2Service>>(async () => 
+                await serviceProvider.GetOauth2Service());
         }
 
         public async Task<GoogleUserInfo> GetUserInfo()
         {
-            var userInfoPlus = await _oauth2Service.Userinfo.Get().ExecuteAsync();
+            var userInfoPlus = await (await _oauth2Service.Value).Userinfo.Get().ExecuteAsync();
 
             return new GoogleUserInfo
             {

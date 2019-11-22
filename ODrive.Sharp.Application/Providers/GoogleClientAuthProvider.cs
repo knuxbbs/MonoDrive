@@ -7,7 +7,7 @@ using Google.Apis.Oauth2.v2;
 using Google.Apis.Util.Store;
 using ODrive.Sharp.Application.Interfaces;
 
-namespace ODrive.Sharp.Application.Services
+namespace ODrive.Sharp.Application.Providers
 {
     public class GoogleClientAuthProvider : IGoogleClientAuthProvider
     {
@@ -22,12 +22,7 @@ namespace ODrive.Sharp.Application.Services
             using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
             {
                 return await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    new ClientSecrets
-                    {
-                        ClientId = "PUT_CLIENT_ID_HERE",
-                        ClientSecret = "PUT_CLIENT_SECRETS_HERE"
-                    },
-                    //GoogleClientSecrets.Load(stream).Secrets,
+                    GoogleClientSecrets.Load(stream).Secrets,
                     Scopes,
                     "user",
                     CancellationToken.None,

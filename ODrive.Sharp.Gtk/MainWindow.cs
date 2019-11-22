@@ -16,12 +16,12 @@ namespace ODrive.Sharp.Gtk
         [UI] private readonly Button _syncButton = null;
         [UI] private readonly ProgressBar _progressBar = null;
 
-        private readonly IGoogleDriveAppService _googleDriveAppService;
+        private readonly IMainWindowPresenter _mainWindowPresenter;
         private IProgress<FolderStructureDownloadProgressChangedEventArgs> _progressReporter;
 
-        public MainWindow(IGoogleDriveAppService googleDriveAppService) : this(new Builder("MainWindow.glade"))
+        public MainWindow(IMainWindowPresenter mainWindowPresenter) : this(new Builder("MainWindow.glade"))
         {
-            _googleDriveAppService = googleDriveAppService;
+            _mainWindowPresenter = mainWindowPresenter;
         }
 
         private MainWindow(Builder builder) : base(builder.GetObject("MainWindow").Handle)
@@ -47,8 +47,7 @@ namespace ODrive.Sharp.Gtk
 
         private async void LoginButton_Clicked(object sender, EventArgs a)
         {
-            await _googleDriveAppService.SignIn();
-            //_userLabel.Text = _driveAppService.Email;
+            _userLabel.Text = await _mainWindowPresenter.GetUserEmail();
         }
 
         private void FileChooser_SelectionChanged(object sender, EventArgs a)
@@ -61,7 +60,7 @@ namespace ODrive.Sharp.Gtk
 
         private async void SyncButton_Clicked(object sender, EventArgs a)
         {
-            await _googleDriveAppService.Sync(_fileChooser.Filename);
+            await _mainWindowPresenter.Sync(_fileChooser.Filename);
         }
 
         private void Window_DeleteEvent(object sender, DeleteEventArgs a)

@@ -1,11 +1,12 @@
+using System.Threading.Tasks;
 using Google.Apis.Oauth2.v2;
 using Google.Apis.Drive.v3;
 
 namespace ODrive.Sharp.Application.Interfaces
 {
-    public interface IGoogleApisServiceProvider
+    public interface IGoogleApiServiceProvider
     {
-        Oauth2Service Oauth2Service { get; }
-        DriveService DriveService { get; }
+        Task<Oauth2Service> GetOauth2Service();
+        Task<DriveService> GetDriveService();
     }
 }

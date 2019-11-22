@@ -4,6 +4,7 @@ using ODrive.Sharp.Application.Interfaces;
 using ODrive.Sharp.Application.Services;
 using Google.Apis.Services;
 using Google.Apis.Http;
+using ODrive.Sharp.Application.Presenters;
 using ODrive.Sharp.Application.Providers;
 
 namespace ODrive.Sharp.Infra.IoC
@@ -13,10 +14,12 @@ namespace ODrive.Sharp.Infra.IoC
         public static void RegisterServices(IServiceCollection services)
         {
             services.AddSingleton<IGoogleClientAuthProvider, GoogleClientAuthProvider>();
-            services.AddScoped<IGoogleApisServiceProvider, GoogleApisServiceProvider>();
+            services.AddScoped<IGoogleApiServiceProvider, GoogleApiServiceProvider>();
 
             services.AddScoped<IGoogleOAuthAppService, GoogleOAuthAppService>();
             services.AddScoped<IGoogleDriveAppService, GoogleDriveAppService>();
+
+            services.AddScoped<IMainWindowPresenter, MainWindowPresenter>();
         }
 
         private static BaseClientService.Initializer GetBaseClientService(
