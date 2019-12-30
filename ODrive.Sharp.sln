@@ -1,10 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODrive.Sharp.Application", "ODrive.Sharp.Application\ODrive.Sharp.Application.csproj", "{CE259BB7-D66A-40B8-BAA2-6BBCEBE10FA0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODriveSharp.Application", "ODriveSharp.Application\ODriveSharp.Application.csproj", "{CE259BB7-D66A-40B8-BAA2-6BBCEBE10FA0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODrive.Sharp.Gtk", "ODrive.Sharp.Gtk\ODrive.Sharp.Gtk.csproj", "{55B57CB0-623B-458A-BAB7-1A5E14B005F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODriveSharp.Gtk", "ODriveSharp.Gtk\ODriveSharp.Gtk.csproj", "{55B57CB0-623B-458A-BAB7-1A5E14B005F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODrive.Sharp.Infra.IoC", "ODrive.Sharp.Infra.IoC\ODrive.Sharp.Infra.IoC.csproj", "{452132F9-8CDE-4202-8606-0E10422D2297}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODriveSharp.Infra.IoC", "ODriveSharp.Infra.IoC\ODriveSharp.Infra.IoC.csproj", "{452132F9-8CDE-4202-8606-0E10422D2297}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

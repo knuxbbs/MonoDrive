@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
+        <RootNamespace>ODrive.Sharp.Infra.IoC</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -9,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ODrive.Sharp.Application\ODrive.Sharp.Application.csproj" />
+      <ProjectReference Include="..\ODriveSharp.Application\ODriveSharp.Application.csproj" />
     </ItemGroup>
 
 </Project>
