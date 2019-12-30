@@ -378,7 +378,7 @@ MigrationBackup/
 .idea/.idea.ODrive.Sharp/.idea/projectSettingsUpdater.xml
 .idea/.idea.ODrive.Sharp/.idea/vcs.xml
 .idea/.idea.ODrive.Sharp/riderModule.iml
-ODrive.Sharp.Application/credentials.json
-ODrive.Sharp.Application/token.json/
-ODrive.Sharp/credentials.json
-ODrive.Sharp/token.json/
+ODriveSharp.Application/credentials.json
+ODriveSharp.Application/token.json/
+ODriveSharp/credentials.json
+ODriveSharp/token.json/
