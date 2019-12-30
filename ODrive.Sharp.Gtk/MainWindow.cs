@@ -7,7 +7,7 @@ using UI = Gtk.Builder.ObjectAttribute;
 
 namespace ODrive.Sharp.Gtk
 {
-    internal class MainWindow : Window
+    public class MainWindow : Window
     {
         [UI] private readonly Label _userLabel = null;
         [UI] private readonly Label _folderLabel = null;

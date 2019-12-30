@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/ODrive.Sharp.Gtk/bin/Debug/netcoreapp3.0/ODrive.Sharp.Gtk.dll",
+            "program": "${workspaceFolder}/ODrive.Sharp.Gtk/bin/Debug/netcoreapp3.1/ODrive.Sharp.Gtk.dll",
             "args": [],
             "cwd": "${workspaceFolder}/ODrive.Sharp.Gtk",
             // For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window

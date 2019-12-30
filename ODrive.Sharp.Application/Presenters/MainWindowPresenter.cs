@@ -17,7 +17,7 @@ namespace ODrive.Sharp.Application.Presenters
             _driveAppService = driveAppService;
         }
         
-        public int RequestsCount = 0;
+        //public int RequestsCount = 0;
 
         private Stopwatch _stopwatch;
 

@@ -14,12 +14,12 @@ namespace ODrive.Sharp.Infra.IoC
         public static void RegisterServices(IServiceCollection services)
         {
             services.AddSingleton<IGoogleClientAuthProvider, GoogleClientAuthProvider>();
-            services.AddScoped<IGoogleApiServiceProvider, GoogleApiServiceProvider>();
+            services.AddSingleton<IGoogleApiServiceProvider, GoogleApiServiceProvider>();
 
-            services.AddScoped<IGoogleOAuthAppService, GoogleOAuthAppService>();
-            services.AddScoped<IGoogleDriveAppService, GoogleDriveAppService>();
+            services.AddSingleton<IGoogleOAuthAppService, GoogleOAuthAppService>();
+            services.AddSingleton<IGoogleDriveAppService, GoogleDriveAppService>();
 
-            services.AddScoped<IMainWindowPresenter, MainWindowPresenter>();
+            services.AddSingleton<IMainWindowPresenter, MainWindowPresenter>();
         }
 
         private static BaseClientService.Initializer GetBaseClientService(
