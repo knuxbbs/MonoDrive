@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Google.Apis.Oauth2.v2;
-using ODrive.Sharp.Application.Interfaces;
+using MonoDrive.Application.Interfaces;
 
-namespace ODrive.Sharp.Application.Services
+namespace MonoDrive.Application.Services
 {
     public class GoogleOAuthAppService : IGoogleOAuthAppService
     {

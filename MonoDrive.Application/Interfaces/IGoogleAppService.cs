@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using Google.Apis.Oauth2.v2;
 using Google.Apis.Drive.v3;
+using Google.Apis.Oauth2.v2;
 
-namespace ODrive.Sharp.Application.Interfaces
+namespace MonoDrive.Application.Interfaces
 {
     public interface IGoogleApiServiceProvider
     {

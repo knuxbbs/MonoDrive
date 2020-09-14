@@ -1,6 +1,6 @@
 using System;
 
-namespace ODrive.Sharp.Application
+namespace MonoDrive.Application
 {
     public abstract class FolderStructureDownloadProgressChangedEventArgs : EventArgs
     {

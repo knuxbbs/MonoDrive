@@ -1,12 +1,9 @@
 using System;
-using System.Linq;
-using GLib;
-using Gtk;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ODrive.Sharp.Infra.IoC;
+using MonoDrive.Infra.IoC;
 
-namespace ODrive.Sharp.Gtk
+namespace MonoDrive.Gtk
 {
     class Program
     {

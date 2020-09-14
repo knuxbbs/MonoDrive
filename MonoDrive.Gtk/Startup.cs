@@ -3,7 +3,7 @@ using GLib;
 using Gtk;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ODrive.Sharp.Gtk
+namespace MonoDrive.Gtk
 {
     public class Startup
     {

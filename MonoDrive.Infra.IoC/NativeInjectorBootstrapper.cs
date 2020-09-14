@@ -1,13 +1,12 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
-using ODrive.Sharp.Application.Interfaces;
-using ODrive.Sharp.Application.Services;
+﻿using Google.Apis.Http;
 using Google.Apis.Services;
-using Google.Apis.Http;
-using ODrive.Sharp.Application.Presenters;
-using ODrive.Sharp.Application.Providers;
+using Microsoft.Extensions.DependencyInjection;
+using MonoDrive.Application.Interfaces;
+using MonoDrive.Application.Presenters;
+using MonoDrive.Application.Providers;
+using MonoDrive.Application.Services;
 
-namespace ODrive.Sharp.Infra.IoC
+namespace MonoDrive.Infra.IoC
 {
     public class NativeInjectorBootstrapper
     {

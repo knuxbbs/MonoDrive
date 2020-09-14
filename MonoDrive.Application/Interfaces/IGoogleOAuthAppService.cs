@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace ODrive.Sharp.Application.Interfaces
+namespace MonoDrive.Application.Interfaces
 {
     public interface IGoogleOAuthAppService : IAppServiceBase
     {

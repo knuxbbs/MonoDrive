@@ -6,9 +6,9 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Oauth2.v2;
 using Google.Apis.Util.Store;
-using ODrive.Sharp.Application.Interfaces;
+using MonoDrive.Application.Interfaces;
 
-namespace ODrive.Sharp.Application.Providers
+namespace MonoDrive.Application.Providers
 {
     public class GoogleClientAuthProvider : IGoogleClientAuthProvider
     {

@@ -1,4 +1,4 @@
-namespace ODrive.Sharp.Application
+namespace MonoDrive.Application
 {
     public class GoogleUserInfo
     {

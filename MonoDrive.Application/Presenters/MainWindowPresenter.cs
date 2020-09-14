@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using ODrive.Sharp.Application.Interfaces;
+using MonoDrive.Application.Interfaces;
 
-namespace ODrive.Sharp.Application.Presenters
+namespace MonoDrive.Application.Presenters
 {
     public class MainWindowPresenter : IMainWindowPresenter
     {

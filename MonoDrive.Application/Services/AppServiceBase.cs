@@ -1,6 +1,6 @@
-using ODrive.Sharp.Application.Interfaces;
+using MonoDrive.Application.Interfaces;
 
-namespace ODrive.Sharp.Application.Services
+namespace MonoDrive.Application.Services
 {
     public abstract class AppServiceBase<TEntity> : IAppServiceBase where TEntity : class
     {

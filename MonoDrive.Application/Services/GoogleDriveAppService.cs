@@ -2,9 +2,9 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using Google.Apis.Drive.v3;
-using ODrive.Sharp.Application.Interfaces;
+using MonoDrive.Application.Interfaces;
 
-namespace ODrive.Sharp.Application.Services
+namespace MonoDrive.Application.Services
 {
     public class GoogleDriveAppService : IGoogleDriveAppService
     {

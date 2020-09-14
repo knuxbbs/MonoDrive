@@ -1,11 +1,11 @@
 using System;
 using System.IO;
 using Gtk;
-using ODrive.Sharp.Application;
-using ODrive.Sharp.Application.Interfaces;
+using MonoDrive.Application;
+using MonoDrive.Application.Interfaces;
 using UI = Gtk.Builder.ObjectAttribute;
 
-namespace ODrive.Sharp.Gtk
+namespace MonoDrive.Gtk
 {
     public class MainWindow : Window
     {

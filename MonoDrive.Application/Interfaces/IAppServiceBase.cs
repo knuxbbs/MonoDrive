@@ -1,4 +1,4 @@
-namespace ODrive.Sharp.Application.Interfaces
+namespace MonoDrive.Application.Interfaces
 {
     public interface IAppServiceBase
     {
