@@ -10,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ODriveSharp.Application\ODriveSharp.Application.csproj" />
+      <ProjectReference Include="..\MonoDrive.Application\MonoDrive.Application.csproj" />
     </ItemGroup>
 
 </Project>

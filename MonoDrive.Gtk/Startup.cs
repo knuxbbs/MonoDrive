@@ -17,8 +17,6 @@ namespace ODrive.Sharp.Gtk
 
         public void Run()
         {
-            global::Gtk.Application.Init();
-
             // ReSharper disable once StringLiteralTypo
             var app = new global::Gtk.Application("com.knuxbbs.odrive", ApplicationFlags.None);
             app.Register(Cancellable.Current);

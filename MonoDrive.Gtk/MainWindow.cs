@@ -16,8 +16,9 @@ namespace ODrive.Sharp.Gtk
         [UI] private readonly Button _syncButton = null;
         [UI] private readonly ProgressBar _progressBar = null;
 
-        private readonly IMainWindowPresenter _mainWindowPresenter;
         private IProgress<FolderStructureDownloadProgressChangedEventArgs> _progressReporter;
+
+        private readonly IMainWindowPresenter _mainWindowPresenter;
 
         public MainWindow(IMainWindowPresenter mainWindowPresenter) : this(new Builder("MainWindow.glade"))
         {

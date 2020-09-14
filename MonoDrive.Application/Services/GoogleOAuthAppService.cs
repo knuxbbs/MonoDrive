@@ -17,6 +17,8 @@ namespace ODrive.Sharp.Application.Services
 
         public async Task<GoogleUserInfo> GetUserInfo()
         {
+            var oauthService = await _oauth2Service.Value;
+            
             var userInfoPlus = await (await _oauth2Service.Value).Userinfo.Get().ExecuteAsync();
 
             return new GoogleUserInfo

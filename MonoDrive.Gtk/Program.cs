@@ -13,6 +13,8 @@ namespace ODrive.Sharp.Gtk
         [STAThread]
         static void Main(string[] args)
         {
+            global::Gtk.Application.Init();
+            
             var host = CreateHostBuilder(args).Build();
             host.Start();
 
