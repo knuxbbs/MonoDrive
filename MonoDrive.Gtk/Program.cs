@@ -12,22 +12,20 @@ namespace MonoDrive.Gtk
         {
             global::Gtk.Application.Init();
             
-            var host = CreateHostBuilder(args).Build();
+            var hostBuilder = GenericHost.CreateHostBuilder(args);
+            hostBuilder.ConfigureServices(RegisterServices);
+            
+            var host = hostBuilder.Build();
             host.Start();
 
             var app = host.Services.GetService<Startup>();
             app.Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            new HostBuilder()
-             .ConfigureServices((hostContext, services) =>
-                {
-                    NativeInjectorBootstrapper.RegisterServices(services);
-
-                    services.AddSingleton<MainWindow>();
-                    services.AddSingleton<Startup>();
-                })
-                .UseConsoleLifetime();
+        private static void RegisterServices(IServiceCollection services)
+        {
+            services.AddSingleton<MainWindow>();
+            services.AddSingleton<Startup>();
+        }
     }
 }
