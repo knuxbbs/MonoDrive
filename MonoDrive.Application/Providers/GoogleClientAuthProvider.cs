@@ -18,26 +18,18 @@ namespace MonoDrive.Application.Providers
             DriveService.Scope.DriveReadonly
         };
 
-        public async Task<UserCredential> GetUserCredential()
+        public Task<UserCredential> GetUserCredential()
         {
             using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
             {
-                try
-                {
-                    return await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                        GoogleClientSecrets.Load(stream).Secrets,
-                        Scopes,
-                        "user",
-                        CancellationToken.None,
-                        // The file token.json stores the user's access and refresh tokens, and is created
-                        // automatically when the authorization flow completes for the first time.
-                        new FileDataStore("token.json", true)).ConfigureAwait(false);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
+                return GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    GoogleClientSecrets.Load(stream).Secrets,
+                    Scopes,
+                    "user",
+                    CancellationToken.None,
+                    // The file token.json stores the user's access and refresh tokens, and is created
+                    // automatically when the authorization flow completes for the first time.
+                    new FileDataStore("token.json", true));
             }
         }
     }

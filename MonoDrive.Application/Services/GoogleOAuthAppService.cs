@@ -7,19 +7,16 @@ namespace MonoDrive.Application.Services
 {
     public class GoogleOAuthAppService : IGoogleOAuthAppService
     {
-        private readonly Lazy<Task<Oauth2Service>> _oauth2Service;
+        private readonly Oauth2Service _oauth2Service;
 
         public GoogleOAuthAppService(IGoogleApiServiceProvider serviceProvider)
         {
-            _oauth2Service = new Lazy<Task<Oauth2Service>>(async () => 
-                await serviceProvider.GetOauth2Service());
+            _oauth2Service = serviceProvider.GetOauth2Service();
         }
 
         public async Task<GoogleUserInfo> GetUserInfo()
         {
-            var oauthService = await _oauth2Service.Value;
-            
-            var userInfoPlus = await (await _oauth2Service.Value).Userinfo.Get().ExecuteAsync();
+            var userInfoPlus = await _oauth2Service.Userinfo.Get().ExecuteAsync();
 
             return new GoogleUserInfo
             {

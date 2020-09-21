@@ -1,6 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using Google.Apis.Drive.v3;
+﻿using Google.Apis.Drive.v3;
+using Google.Apis.Http;
 using Google.Apis.Oauth2.v2;
 using Google.Apis.Services;
 using MonoDrive.Application.Interfaces;
@@ -9,34 +8,27 @@ namespace MonoDrive.Application.Providers
 {
     public class GoogleApiServiceProvider : IGoogleApiServiceProvider
     {
-        private readonly Lazy<Task<BaseClientService.Initializer>> _initializer;
+        private readonly BaseClientService.Initializer _initializer;
 
-        public GoogleApiServiceProvider(IGoogleClientAuthProvider googleClientAuthProvider)
+        public GoogleApiServiceProvider(IConfigurableHttpClientInitializer httpClientInitializer,
+            IHttpClientFactory clientFactory)
         {
-            _initializer = new Lazy<Task<BaseClientService.Initializer>>(async () =>
-                new BaseClientService.Initializer
-                {
-                    HttpClientInitializer = await googleClientAuthProvider.GetUserCredential(),
-                    ApplicationName = "knuxbbs Open Drive"
-                });
-        }
-
-        public async Task<Oauth2Service> GetOauth2Service()
-        {
-            return new Oauth2Service(await _initializer.Value);
-        }
-        
-        public async Task<DriveService> GetDriveService()
-        {
-            return new DriveService(await _initializer.Value);
-        }
-
-        public void Dispose()
-        {
-            if (_initializer.IsValueCreated)
+            _initializer = new BaseClientService.Initializer
             {
-                _initializer.Value.Dispose();
-            }
+                HttpClientInitializer = httpClientInitializer,
+                HttpClientFactory = clientFactory,
+                ApplicationName = "MonoDrive"
+            };
+        }
+
+        public DriveService GetDriveService()
+        {
+            return new DriveService(_initializer);
+        }
+
+        public Oauth2Service GetOauth2Service()
+        {
+            return new Oauth2Service(_initializer);
         }
     }
 }

@@ -8,19 +8,18 @@ namespace MonoDrive.Application.Services
 {
     public class GoogleDriveAppService : IGoogleDriveAppService
     {
-        private readonly Lazy<Task<DriveService>> _driveService;
+        private readonly DriveService _driveService;
 
         public GoogleDriveAppService(IGoogleApiServiceProvider serviceProvider)
         {
-            _driveService = new Lazy<Task<DriveService>>(async () => 
-                await serviceProvider.GetDriveService());
+            _driveService = serviceProvider.GetDriveService();
         }
 
-        public async Task DownloadFolderStructure(string remoteFolderName,
+        public void DownloadFolderStructure(string remoteFolderName,
             string parentFolderPath)
         {
             // Define parameters of request.
-            var listRequest = (await _driveService.Value).Files.List();
+            var listRequest = _driveService.Files.List();
             listRequest.Fields = "nextPageToken, files(id, name, mimeType, parents, trashed)";
 
             var query = new StringBuilder("mimeType = 'application/vnd.google-apps.folder' ")
@@ -33,7 +32,7 @@ namespace MonoDrive.Application.Services
         public async Task DownloadFiles()
         {
             // Define parameters of request.
-            var listRequest = (await _driveService.Value).Files.List();
+            var listRequest = _driveService.Files.List();
             listRequest.PageSize = 10;
             listRequest.Fields = "nextPageToken, files(id, name)";
 

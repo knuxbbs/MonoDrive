@@ -7,7 +7,7 @@ namespace MonoDrive.Infra.IoC
     {
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             new HostBuilder()
-                .ConfigureServices((hostContext, services) =>
+                .ConfigureServices((builderContext, services) =>
                 {
                     NativeInjectorBootstrapper.RegisterServices(services);
                 })

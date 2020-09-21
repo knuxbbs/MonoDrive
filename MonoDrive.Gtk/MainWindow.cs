@@ -59,9 +59,9 @@ namespace MonoDrive.Gtk
             _syncButton.Sensitive = Directory.Exists(fileChooser.Filename);
         }
 
-        private async void SyncButton_Clicked(object sender, EventArgs a)
+        private void SyncButton_Clicked(object sender, EventArgs a)
         {
-            await _mainWindowPresenter.Sync(_fileChooser.Filename);
+            _mainWindowPresenter.Sync(_fileChooser.Filename);
         }
 
         private void Window_DeleteEvent(object sender, DeleteEventArgs a)

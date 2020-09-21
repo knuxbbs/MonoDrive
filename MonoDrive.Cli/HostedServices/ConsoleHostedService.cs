@@ -1,20 +1,27 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MonoDrive.Application.Interfaces;
 
 namespace MonoDrive.Cli.HostedServices
 {
     public class ConsoleHostedService : IHostedService
     {
+        private readonly IGoogleOAuthAppService _oAuthAppService;
+        private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
         private readonly IHostApplicationLifetime _appLifetime;
 
-        public ConsoleHostedService(
+        public ConsoleHostedService(IGoogleOAuthAppService oAuthAppService,
+            IConfiguration configuration,
             ILogger<ConsoleHostedService> logger,
             IHostApplicationLifetime appLifetime)
         {
+            _oAuthAppService = oAuthAppService;
+            _configuration = configuration;
             _logger = logger;
             _appLifetime = appLifetime;
         }
@@ -31,6 +38,13 @@ namespace MonoDrive.Cli.HostedServices
                     {
                         _logger.LogInformation("Hello World!");
 
+                        var googleUserInfo = await _oAuthAppService.GetUserInfo();
+                        _logger.LogInformation($"Id: {googleUserInfo.Id}");
+                        _logger.LogInformation($"Email: {googleUserInfo.Email}");
+                        _logger.LogInformation($"ETag: {googleUserInfo.ETag}");
+                        _logger.LogInformation($"Gender: {googleUserInfo.Gender}");
+                        _logger.LogInformation($"Picture: {googleUserInfo.Picture}");
+                        
                         // Simulate real work is being done
                         await Task.Delay(1000);
                     }

@@ -5,19 +5,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Google.Apis.Drive.v3" Version="1.40.3.1671" />
-      <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.40.3.1602" />
-      <PackageReference Include="LiteDB" Version="4.1.4" />
+        <PackageReference Include="Google.Apis.Drive.v3" Version="1.40.3.1671" />
+        <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.40.3.1602" />
+        <PackageReference Include="LiteDB" Version="4.1.4" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="credentials.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+        <None Update="credentials.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Remove="QuickStart.cs" />
+        <Compile Remove="QuickStart.cs" />
+        <Compile Remove="Providers\NewGoogleApiServiceProvider.cs" />
     </ItemGroup>
 
 </Project>
