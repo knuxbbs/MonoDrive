@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -7,10 +8,11 @@ namespace MonoDrive.Infra.IoC
     {
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             new HostBuilder()
-                .ConfigureServices((builderContext, services) =>
+                .ConfigureAppConfiguration((builderContext, config) =>
                 {
-                    NativeInjectorBootstrapper.RegisterServices(services);
+                    config.AddJsonFile("credentials.json", optional: false, reloadOnChange: true);
                 })
+                .ConfigureServices(NativeInjectorBootstrapper.RegisterServices)
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     //logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));

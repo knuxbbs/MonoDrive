@@ -6,7 +6,7 @@ using RateLimiter;
 
 namespace MonoDrive.Infra.IoC
 {
-    public class CustomHttpClientFactory : HttpClientFactory
+    public class GoogleHttpClientFactory : HttpClientFactory
     {
         protected override HttpMessageHandler CreateHandler(CreateHttpClientArgs args)
         {

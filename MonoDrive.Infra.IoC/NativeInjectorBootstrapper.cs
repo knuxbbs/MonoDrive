@@ -1,12 +1,13 @@
-﻿using System.IO;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Http;
 using Google.Apis.Oauth2.v2;
 using Google.Apis.Util.Store;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MonoDrive.Application.Interfaces;
 using MonoDrive.Application.Presenters;
 using MonoDrive.Application.Providers;
@@ -16,15 +17,18 @@ namespace MonoDrive.Infra.IoC
 {
     public class NativeInjectorBootstrapper
     {
-        public static void RegisterServices(IServiceCollection services)
+        public static void RegisterServices(HostBuilderContext builderContext, IServiceCollection services)
         {
             services.AddSingleton<IGoogleApiServiceProvider, GoogleApiServiceProvider>();
 
             services.AddSingleton<IGoogleOAuthAppService, GoogleOAuthAppService>();
             services.AddSingleton<IGoogleDriveAppService, GoogleDriveAppService>();
 
-            services.AddSingleton<IConfigurableHttpClientInitializer>(x => GetUserCredential().Result);
-            services.AddSingleton<IHttpClientFactory, CustomHttpClientFactory>();
+            var googleClientCredentials = builderContext.Configuration.GetSection("installed");
+
+            services.AddSingleton<IConfigurableHttpClientInitializer>(x =>
+                GetUserCredential(googleClientCredentials).Result);
+            services.AddSingleton<IHttpClientFactory, GoogleHttpClientFactory>();
 
             // services.AddHttpClient("google")
             //     .ConfigurePrimaryHttpMessageHandler(() => TimeLimiter
@@ -34,25 +38,24 @@ namespace MonoDrive.Infra.IoC
             services.AddSingleton<IMainWindowPresenter, MainWindowPresenter>();
         }
 
-        private static Task<UserCredential> GetUserCredential()
+        private static Task<UserCredential> GetUserCredential(IConfiguration configuration)
         {
-            string[] scopes =
-            {
-                Oauth2Service.Scope.UserinfoEmail,
-                DriveService.Scope.DriveReadonly
-            };
-
-            using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
-            {
-                return GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
-                    scopes,
-                    "user",
-                    CancellationToken.None,
-                    // The file token.json stores the user's access and refresh tokens, and is created
-                    // automatically when the authorization flow completes for the first time.
-                    new FileDataStore("token.json", true));
-            }
+            return GoogleWebAuthorizationBroker.AuthorizeAsync(
+                new ClientSecrets
+                {
+                    ClientId = configuration["client_id"],
+                    ClientSecret = configuration["client_secret"]
+                },
+                new []
+                {
+                    Oauth2Service.Scope.UserinfoEmail,
+                    DriveService.Scope.DriveReadonly
+                },
+                "user",
+                CancellationToken.None,
+                // The file token.json stores the user's access and refresh tokens, and is created
+                // automatically when the authorization flow completes for the first time.
+                new FileDataStore("token.json", true));
         }
     }
 }

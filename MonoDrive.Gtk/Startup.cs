@@ -18,7 +18,7 @@ namespace MonoDrive.Gtk
         public void Run()
         {
             // ReSharper disable once StringLiteralTypo
-            var app = new global::Gtk.Application("com.knuxbbs.odrive", ApplicationFlags.None);
+            var app = new global::Gtk.Application("com.knuxbbs.monodrive", ApplicationFlags.None);
             app.Register(Cancellable.Current);
 
             // Bind any unhandled exceptions in the GTK UI so that they are logged.

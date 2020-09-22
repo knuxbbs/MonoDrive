@@ -11,12 +11,12 @@ namespace MonoDrive.Application.Providers
         private readonly BaseClientService.Initializer _initializer;
 
         public GoogleApiServiceProvider(IConfigurableHttpClientInitializer httpClientInitializer,
-            IHttpClientFactory clientFactory)
+            IHttpClientFactory httpClientFactory)
         {
             _initializer = new BaseClientService.Initializer
             {
                 HttpClientInitializer = httpClientInitializer,
-                HttpClientFactory = clientFactory,
+                HttpClientFactory = httpClientFactory,
                 ApplicationName = "MonoDrive"
             };
         }

@@ -5,9 +5,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Google.Apis.Drive.v3" Version="1.40.3.1671" />
-        <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.40.3.1602" />
-        <PackageReference Include="LiteDB" Version="4.1.4" />
+        <PackageReference Include="Google.Apis.Drive.v3" Version="1.49.0.2072" />
+        <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.48.0.1869" />
+        <PackageReference Include="LiteDB" Version="5.0.9" />
     </ItemGroup>
 
     <ItemGroup>
