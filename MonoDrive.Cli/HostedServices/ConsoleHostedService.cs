@@ -10,14 +10,17 @@ namespace MonoDrive.Cli.HostedServices
     public class ConsoleHostedService : IHostedService
     {
         private readonly IGoogleOAuthAppService _oAuthAppService;
+        private readonly IGoogleScriptAppService _googleScriptAppService;
         private readonly ILogger _logger;
         private readonly IHostApplicationLifetime _appLifetime;
 
         public ConsoleHostedService(IGoogleOAuthAppService oAuthAppService,
+            IGoogleScriptAppService googleScriptAppService,
             ILogger<ConsoleHostedService> logger,
             IHostApplicationLifetime appLifetime)
         {
             _oAuthAppService = oAuthAppService;
+            _googleScriptAppService = googleScriptAppService;
             _logger = logger;
             _appLifetime = appLifetime;
         }
@@ -32,18 +35,17 @@ namespace MonoDrive.Cli.HostedServices
                 {
                     try
                     {
-                        _logger.LogInformation("Hello World!");
-
                         var googleUserInfo = await _oAuthAppService.GetUserInfo();
-                        _logger.LogInformation($"Id: {googleUserInfo.Id}");
-                        _logger.LogInformation($"Email: {googleUserInfo.Email}");
-                        _logger.LogInformation($"Name: {googleUserInfo.Name}");
-                        _logger.LogInformation($"ETag: {googleUserInfo.ETag}");
-                        _logger.LogInformation($"Gender: {googleUserInfo.Gender}");
-                        _logger.LogInformation($"Picture: {googleUserInfo.Picture}");
                         
-                        // Simulate real work is being done
-                        await Task.Delay(1000);
+                        Console.WriteLine("User credentials:");
+                        Console.WriteLine($"\tId: {googleUserInfo.Id}");
+                        Console.WriteLine($"\tEmail: {googleUserInfo.Email}");
+                        Console.WriteLine($"\tName: {googleUserInfo.Name}");
+                        Console.WriteLine($"\tETag: {googleUserInfo.ETag}");
+                        Console.WriteLine($"\tGender: {googleUserInfo.Gender}");
+                        Console.WriteLine($"\tPicture: {googleUserInfo.Picture}");
+
+                        await _googleScriptAppService.GetFoldersUnderRoot();
                     }
                     catch (Exception ex)
                     {
@@ -54,7 +56,7 @@ namespace MonoDrive.Cli.HostedServices
                         // Stop the application once the work is done
                         //_appLifetime.StopApplication();
                     }
-                });
+                }, cancellationToken);
             });
 
             return Task.CompletedTask;

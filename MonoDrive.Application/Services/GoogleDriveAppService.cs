@@ -1,7 +1,10 @@
 using System;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Google.Apis.Drive.v3;
+using Microsoft.Extensions.Logging;
 using MonoDrive.Application.Interfaces;
 
 namespace MonoDrive.Application.Services
@@ -9,17 +12,21 @@ namespace MonoDrive.Application.Services
     public class GoogleDriveAppService : IGoogleDriveAppService
     {
         private readonly DriveService _driveService;
+        private readonly ILogger _logger;
 
-        public GoogleDriveAppService(IGoogleApiServiceProvider serviceProvider)
+        public GoogleDriveAppService(IGoogleApiServiceProvider serviceProvider,
+            ILogger<GoogleOAuthAppService> logger)
         {
             _driveService = serviceProvider.GetDriveService();
+            _logger = logger;
         }
 
-        public void DownloadFolderStructure(string remoteFolderName,
+        public async Task DownloadFolderStructure(string remoteFolderName,
             string parentFolderPath)
         {
             // Define parameters of request.
             var listRequest = _driveService.Files.List();
+            listRequest.PageSize = 1000;
             listRequest.Fields = "nextPageToken, files(id, name, mimeType, parents, trashed)";
 
             var query = new StringBuilder("mimeType = 'application/vnd.google-apps.folder' ")
@@ -27,6 +34,20 @@ namespace MonoDrive.Application.Services
                 .AppendFormat($"and '{remoteFolderName}' in parents");
 
             listRequest.Q = query.ToString();
+            
+            var fileList = await listRequest.ExecuteAsync();
+            var files = fileList.Files;
+            
+            await Task.WhenAll(files.Select(async x =>
+            {
+                var localFolderPath = Path.Combine(parentFolderPath, x.Name);
+
+                Directory.CreateDirectory(localFolderPath);
+                _logger.LogInformation($"Diretório '{localFolderPath}' criado com sucesso.");
+
+                await DownloadFolderStructure(x.Id,
+                    localFolderPath);
+            }));
         }
 
         public async Task DownloadFiles()

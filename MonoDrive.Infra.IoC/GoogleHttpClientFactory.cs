@@ -11,7 +11,7 @@ namespace MonoDrive.Infra.IoC
         protected override HttpMessageHandler CreateHandler(CreateHttpClientArgs args)
         {
             var handler = TimeLimiter
-                .GetFromMaxCountByInterval(60, TimeSpan.FromMinutes(1))
+                .GetFromMaxCountByInterval(1000, TimeSpan.FromSeconds(100))
                 .AsDelegatingHandler();
 
             handler.InnerHandler = base.CreateHandler(args);

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using MonoDrive.Application.Interfaces;
@@ -28,7 +29,7 @@ namespace MonoDrive.Application.Presenters
             return (await _oAuthAppService.GetUserInfo()).Email;
         }
 
-        public void Sync(string folderPath)
+        public async Task Sync(string folderPath)
         {
             const string folderName = "Teste";
             _localRootFolder = Path.Combine(folderPath, folderName);
@@ -40,8 +41,10 @@ namespace MonoDrive.Application.Presenters
 
             //TODO: Salvar informações e configurações do usuário
             //TODO: Obter estrutura de diretórios
-            _driveAppService.DownloadFolderStructure("root",
+            await _driveAppService.DownloadFolderStructure("root",
                 _localRootFolder);
+            
+            Console.WriteLine("Download finalizado.");
             //await DownloadFiles();
         }
 

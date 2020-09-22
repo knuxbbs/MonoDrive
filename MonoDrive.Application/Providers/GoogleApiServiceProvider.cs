@@ -1,6 +1,7 @@
 ﻿using Google.Apis.Drive.v3;
 using Google.Apis.Http;
 using Google.Apis.Oauth2.v2;
+using Google.Apis.Script.v1;
 using Google.Apis.Services;
 using MonoDrive.Application.Interfaces;
 
@@ -29,6 +30,11 @@ namespace MonoDrive.Application.Providers
         public Oauth2Service GetOauth2Service()
         {
             return new Oauth2Service(_initializer);
+        }
+        
+        public ScriptService GetScriptService()
+        {
+            return new ScriptService(_initializer);
         }
     }
 }
