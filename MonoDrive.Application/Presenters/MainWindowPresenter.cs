@@ -10,14 +10,14 @@ namespace MonoDrive.Application.Presenters
     {
         private readonly IGoogleOAuthAppService _oAuthAppService;
         private readonly IGoogleDriveAppService _driveAppService;
-        
-        public MainWindowPresenter(IGoogleOAuthAppService oAuthAppService, 
+
+        public MainWindowPresenter(IGoogleOAuthAppService oAuthAppService,
             IGoogleDriveAppService driveAppService)
         {
             _oAuthAppService = oAuthAppService;
             _driveAppService = driveAppService;
         }
-        
+
         //public int RequestsCount = 0;
 
         private Stopwatch _stopwatch;
@@ -43,7 +43,7 @@ namespace MonoDrive.Application.Presenters
             //TODO: Obter estrutura de diretórios
             await _driveAppService.DownloadFolderStructure("root",
                 _localRootFolder);
-            
+
             Console.WriteLine("Download finalizado.");
             //await DownloadFiles();
         }

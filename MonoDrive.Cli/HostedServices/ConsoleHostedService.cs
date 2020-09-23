@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -10,16 +11,19 @@ namespace MonoDrive.Cli.HostedServices
     public class ConsoleHostedService : IHostedService
     {
         private readonly IGoogleOAuthAppService _oAuthAppService;
+        private readonly IGoogleDriveAppService _driveAppService;
         private readonly IGoogleScriptAppService _googleScriptAppService;
         private readonly ILogger _logger;
         private readonly IHostApplicationLifetime _appLifetime;
 
         public ConsoleHostedService(IGoogleOAuthAppService oAuthAppService,
+            IGoogleDriveAppService driveAppService,
             IGoogleScriptAppService googleScriptAppService,
             ILogger<ConsoleHostedService> logger,
             IHostApplicationLifetime appLifetime)
         {
             _oAuthAppService = oAuthAppService;
+            _driveAppService = driveAppService;
             _googleScriptAppService = googleScriptAppService;
             _logger = logger;
             _appLifetime = appLifetime;
@@ -45,7 +49,11 @@ namespace MonoDrive.Cli.HostedServices
                         Console.WriteLine($"\tGender: {googleUserInfo.Gender}");
                         Console.WriteLine($"\tPicture: {googleUserInfo.Picture}");
 
-                        await _googleScriptAppService.GetFoldersUnderRoot();
+                        //await _googleScriptAppService.GetFoldersUnderRoot();
+                        var stopwatch = new Stopwatch();
+                        stopwatch.Start();
+                        await _driveAppService.GetFoldersStructure();
+                        _logger.LogInformation($"Elapsed time: {stopwatch.Elapsed.Seconds} seconds.");
                     }
                     catch (Exception ex)
                     {

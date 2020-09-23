@@ -17,6 +17,8 @@ namespace MonoDrive.Application.Services
             _scriptService = serviceProvider.GetScriptService();
         }
 
+        private const string ScriptId = "1YEpnXKoI7i_LFJcW5szRN_0YO56fPCJII0z6APgKyX5BbyCowZbDoEB-";
+
         public async Task GetFoldersUnderRoot()
         {
             // Create an execution request object.
@@ -25,7 +27,7 @@ namespace MonoDrive.Application.Services
                 Function = "getFoldersUnderRoot"
             };
 
-            var runRequest = _scriptService.Scripts.Run(executionRequest, "1YEpnXKoI7i_LFJcW5szRN_0YO56fPCJII0z6APgKyX5BbyCowZbDoEB-");
+            var runRequest = _scriptService.Scripts.Run(executionRequest, ScriptId);
 
             try
             {

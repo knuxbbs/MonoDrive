@@ -26,7 +26,7 @@ namespace MonoDrive.Application
             var collection = Database.GetCollection<T>(CollectionName);
             collection.Insert(value);
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public Task DeleteAsync<T>(string key)
@@ -40,7 +40,7 @@ namespace MonoDrive.Application
             // collection.Find()
             // collection.Delete(value);
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public Task<T> GetAsync<T>(string key)

@@ -1,8 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Google;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Http;
+using Google.Apis.Logging;
 using Google.Apis.Oauth2.v2;
 using Google.Apis.Util.Store;
 using Microsoft.Extensions.Configuration;
@@ -37,6 +39,8 @@ namespace MonoDrive.Infra.IoC
             //         .AsDelegatingHandler());
 
             services.AddSingleton<IMainWindowPresenter, MainWindowPresenter>();
+            
+            ApplicationContext.RegisterLogger(new ConsoleLogger(LogLevel.Warning));
         }
 
         private static Task<UserCredential> GetUserCredential(IConfiguration configuration)

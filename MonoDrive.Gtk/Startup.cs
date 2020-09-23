@@ -38,6 +38,7 @@ namespace MonoDrive.Gtk
         {
             if (args.ExceptionObject is Exception unhandledException)
             {
+                //TODO: Caso haja algum erro na construção do host, o ServiceProvider virá como nulo
                 var dialog = new Dialog("Error", ServiceProvider.GetService<MainWindow>(),
                     DialogFlags.Modal | DialogFlags.DestroyWithParent,
                     "Okay", ResponseType.Ok);
