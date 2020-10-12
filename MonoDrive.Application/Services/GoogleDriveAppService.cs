@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -25,34 +27,6 @@ namespace MonoDrive.Application.Services
             //                                                     ConfigurableMessageHandler.LogEventType.ResponseBody;
 
             _logger = logger;
-        }
-
-        public async Task GetFoldersStructure()
-        {
-            var listRequest = _driveService.Files.List();
-            listRequest.PageSize = 1000;
-            listRequest.Fields = "nextPageToken, files(id, name, mimeType, parents, trashed)";
-
-            var query = new StringBuilder("mimeType = 'application/vnd.google-apps.folder' ")
-                .Append("and trashed = false ");
-
-            listRequest.Q = query.ToString();
-
-            var files = new List<File>();
-            FileList fileList = null;
-
-            while (fileList == null || !string.IsNullOrWhiteSpace(fileList.NextPageToken))
-            {
-                if (fileList != null)
-                {
-                    listRequest.PageToken = fileList.NextPageToken;
-                }
-
-                fileList = await listRequest.ExecuteAsync();
-                files.AddRange(fileList.Files);
-            }
-
-            var filesCount = files.Count;
         }
 
         public async Task DownloadFolderStructure(string remoteFolderName,
@@ -94,6 +68,76 @@ namespace MonoDrive.Application.Services
             // List files.
             var filesList = await listRequest.ExecuteAsync();
             var files = filesList.Files;
+        }
+        
+        public async Task CreateFolders(string parentFolderPath)
+        {
+            var folders = await DownloadFoldersStructure();
+            
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            
+            //Pastas compartilhadas são retornadas como órfãs
+            folders = folders.Where(x => x.Parents != null).ToArray();
+            //TODO: Verificar se é interessante salvar o id da pasta raíz
+            //A pasta raíz não é retornada pela consulta de diretórios
+            var rootFolder = await _driveService.Files.Get("root").ExecuteAsync();
+
+            var rootChildren = folders.Where(x => x.Parents.Contains(rootFolder.Id));
+
+            void CreateFolder(File remoteFolder, string localPath)
+            {
+                var localFolderPath = Path.Combine(localPath, remoteFolder.Name);
+                Directory.CreateDirectory(localFolderPath);
+                
+                var children = folders.Where(y => y.Parents.Contains(remoteFolder.Id));
+                
+                foreach (var childrenFolder in children)
+                {
+                    CreateFolder(childrenFolder, localFolderPath);
+                }
+            }
+
+            foreach (var folder in rootChildren)
+            {
+                CreateFolder(folder, parentFolderPath);
+            }
+            
+            _logger.LogInformation($"Directories successfully created. Elapsed time: {stopwatch.Elapsed.Milliseconds} milliseconds.");
+        }
+
+        private async Task<IList<File>> DownloadFoldersStructure()
+        {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var listRequest = _driveService.Files.List();
+            listRequest.PageSize = 1000;
+            listRequest.Fields = "nextPageToken, files(id, name, mimeType, parents, trashed, shared)";
+
+            var query = new StringBuilder("mimeType = 'application/vnd.google-apps.folder' ")
+                .Append("and trashed = false ");
+
+            listRequest.Q = query.ToString();
+
+            var files = new List<File>();
+            FileList fileList = null;
+
+            while (fileList == null || !string.IsNullOrWhiteSpace(fileList.NextPageToken))
+            {
+                if (fileList != null)
+                {
+                    listRequest.PageToken = fileList.NextPageToken;
+                }
+
+                fileList = await listRequest.ExecuteAsync();
+                files.AddRange(fileList.Files);
+            }
+
+            _logger.LogInformation(
+                $"{files.Count} folders downloaded. Elapsed time: {stopwatch.Elapsed.Seconds} seconds.");
+
+            return files;
         }
     }
 }

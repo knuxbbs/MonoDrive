@@ -50,10 +50,7 @@ namespace MonoDrive.Cli.HostedServices
                         Console.WriteLine($"\tPicture: {googleUserInfo.Picture}");
 
                         //await _googleScriptAppService.GetFoldersUnderRoot();
-                        var stopwatch = new Stopwatch();
-                        stopwatch.Start();
-                        await _driveAppService.GetFoldersStructure();
-                        _logger.LogInformation($"Elapsed time: {stopwatch.Elapsed.Seconds} seconds.");
+                        await _driveAppService.CreateFolders("MonoDrive Test");
                     }
                     catch (Exception ex)
                     {
