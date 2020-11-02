@@ -20,7 +20,7 @@ namespace MonoDrive.Application.Services
         private readonly ILogger _logger;
 
         public GoogleDriveAppService(IGoogleApiServiceProvider serviceProvider,
-            ILogger<GoogleOAuthAppService> logger)
+            ILogger<GoogleDriveAppService> logger)
         {
             _driveService = serviceProvider.GetDriveService();
             // _driveService.HttpClient.MessageHandler.LogEvents = ConfigurableMessageHandler.LogEventType.RequestHeaders |
@@ -69,14 +69,17 @@ namespace MonoDrive.Application.Services
             var filesList = await listRequest.ExecuteAsync();
             var files = filesList.Files;
         }
-        
-        public async Task CreateFolders(string parentFolderPath)
+
+        public async Task CreateFolders(string parentDirectoryPath)
         {
+            //TODO: Tratar possíveis excessões relacionadas à construção do DirectoryInfo antes de baixar as informações
+            //var parentDirectoryInfo = new DirectoryInfo(parentDirectoryPath);
+
             var folders = await DownloadFoldersStructure();
-            
+
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            
+
             //Pastas compartilhadas são retornadas como órfãs
             folders = folders.Where(x => x.Parents != null).ToArray();
             //TODO: Verificar se é interessante salvar o id da pasta raíz
@@ -85,13 +88,18 @@ namespace MonoDrive.Application.Services
 
             var rootChildren = folders.Where(x => x.Parents.Contains(rootFolder.Id));
 
+            var directoriesIds = new Dictionary<string, DirectoryInfo>();
+
             void CreateFolder(File remoteFolder, string localPath)
             {
                 var localFolderPath = Path.Combine(localPath, remoteFolder.Name);
-                Directory.CreateDirectory(localFolderPath);
                 
+                var directoryInfo = new DirectoryInfo(localFolderPath);
+                directoryInfo.Create();
+                directoriesIds.Add(remoteFolder.Id, directoryInfo);
+
                 var children = folders.Where(y => y.Parents.Contains(remoteFolder.Id));
-                
+
                 foreach (var childrenFolder in children)
                 {
                     CreateFolder(childrenFolder, localFolderPath);
@@ -100,10 +108,13 @@ namespace MonoDrive.Application.Services
 
             foreach (var folder in rootChildren)
             {
-                CreateFolder(folder, parentFolderPath);
+                CreateFolder(folder, parentDirectoryPath);
             }
-            
-            _logger.LogInformation($"Directories successfully created. Elapsed time: {stopwatch.Elapsed.Milliseconds} milliseconds.");
+
+            //var directoriesInfo = parentDirectoryInfo.GetDirectories("*.*", SearchOption.AllDirectories);
+
+            _logger.LogInformation(
+                $"Directories successfully created. Elapsed time: {stopwatch.Elapsed.Milliseconds} milliseconds.");
         }
 
         private async Task<IList<File>> DownloadFoldersStructure()

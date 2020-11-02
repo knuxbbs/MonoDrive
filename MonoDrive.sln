@@ -8,6 +8,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDrive.Gtk", "MonoDrive.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDrive.Cli", "MonoDrive.Cli\MonoDrive.Cli.csproj", "{5A6A8C15-013F-4CE3-BE9C-6327660F77D8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D994EB47-8F81-460F-93BF-02F67E9F0858}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDrive.Application.Test", "MonoDrive.Application.Test\MonoDrive.Application.Test.csproj", "{3B3AE18E-B4B7-4518-9B26-24A94BAA3BFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,12 @@ Global
 		{5A6A8C15-013F-4CE3-BE9C-6327660F77D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A6A8C15-013F-4CE3-BE9C-6327660F77D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A6A8C15-013F-4CE3-BE9C-6327660F77D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B3AE18E-B4B7-4518-9B26-24A94BAA3BFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B3AE18E-B4B7-4518-9B26-24A94BAA3BFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B3AE18E-B4B7-4518-9B26-24A94BAA3BFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B3AE18E-B4B7-4518-9B26-24A94BAA3BFB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3B3AE18E-B4B7-4518-9B26-24A94BAA3BFB} = {D994EB47-8F81-460F-93BF-02F67E9F0858}
 	EndGlobalSection
 EndGlobal
