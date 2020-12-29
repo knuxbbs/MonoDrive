@@ -29,35 +29,6 @@ namespace MonoDrive.Application.Services
             _logger = logger;
         }
 
-        public async Task DownloadFolderStructure(string remoteFolderName,
-            string parentFolderPath)
-        {
-            var listRequest = _driveService.Files.List();
-            listRequest.PageSize = 1000;
-            //TODO: Pass nextPageToken. https://stackoverflow.com/q/41572228/7267592
-            listRequest.Fields = "nextPageToken, files(id, name, mimeType, parents, trashed)";
-
-            var query = new StringBuilder("mimeType = 'application/vnd.google-apps.folder' ")
-                .Append("and trashed = false ")
-                .AppendFormat($"and '{remoteFolderName}' in parents");
-
-            listRequest.Q = query.ToString();
-
-            var fileList = await listRequest.ExecuteAsync();
-            var files = fileList.Files;
-
-            await Task.WhenAll(files.Select(async x =>
-            {
-                var localFolderPath = Path.Combine(parentFolderPath, x.Name);
-
-                Directory.CreateDirectory(localFolderPath);
-                _logger.LogInformation($"Diretório '{localFolderPath}' criado com sucesso.");
-
-                await DownloadFolderStructure(x.Id,
-                    localFolderPath);
-            }));
-        }
-
         public async Task DownloadFiles()
         {
             // Define parameters of request.
@@ -70,6 +41,11 @@ namespace MonoDrive.Application.Services
             var files = filesList.Files;
         }
 
+        /// <summary>
+        /// Baixa estrutura de diretórios e a adiciona ao caminho passado como parâmetro
+        /// </summary>
+        /// <param name="parentDirectoryPath">Caminho no qual será reproduzida a estrutura de diretórios remotos</param>
+        /// <returns></returns>
         public async Task CreateFolders(string parentDirectoryPath)
         {
             //TODO: Tratar possíveis excessões relacionadas à construção do DirectoryInfo antes de baixar as informações
@@ -117,6 +93,10 @@ namespace MonoDrive.Application.Services
                 $"Directories successfully created. Elapsed time: {stopwatch.Elapsed.Milliseconds} milliseconds.");
         }
 
+        /// <summary>
+        /// Baixa estrutura de diretórios 
+        /// </summary>
+        /// <returns></returns>
         private async Task<IList<File>> DownloadFoldersStructure()
         {
             var stopwatch = new Stopwatch();
