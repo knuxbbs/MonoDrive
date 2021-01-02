@@ -1,12 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using Google.Apis.Json;
 using Google.Apis.Util.Store;
 using LiteDB;
 
-namespace MonoDrive.Application
+namespace MonoDrive.Application.Data
 {
-    public class LiteDbDataStore : IDataStore
+    public class LiteDbDataStore : IDataStore 
     {
         public LiteDbDataStore(string connectionString)
         {
@@ -24,7 +23,7 @@ namespace MonoDrive.Application
             }
 
             var collection = Database.GetCollection<T>(CollectionName);
-            collection.Insert(value);
+            collection.Upsert(GenerateStoredKey(key, typeof(T)), value);
 
             return Task.CompletedTask;
         }
@@ -37,20 +36,40 @@ namespace MonoDrive.Application
             }
 
             var collection = Database.GetCollection<T>(CollectionName);
-            // collection.Find()
-            // collection.Delete(value);
+            collection.Delete(GenerateStoredKey(key, typeof(T)));
 
             return Task.CompletedTask;
         }
 
         public Task<T> GetAsync<T>(string key)
         {
-            throw new System.NotImplementedException();
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException("Key MUST have a value");
+            }
+            
+            var taskCompletionSource = new TaskCompletionSource<T>();
+            
+            var collection = Database.GetCollection<T>(CollectionName);
+            
+            try
+            {
+                var value = collection.FindById(GenerateStoredKey(key, typeof(T)));
+                taskCompletionSource.SetResult(value);
+            }
+            catch (Exception ex)
+            {
+                taskCompletionSource.SetException(ex);
+            }
+            
+            return taskCompletionSource.Task;
         }
 
         public Task ClearAsync()
         {
-            throw new System.NotImplementedException();
+            Database.DropCollection(CollectionName);
+
+            return Task.CompletedTask;
         }
 
         private static string GenerateStoredKey(string key, Type t)

@@ -65,7 +65,7 @@ namespace MonoDrive.Application.Services
             var rootFolder = await _driveService.Files.Get("root").ExecuteAsync();
 
             var rootChildren = folders.Where(x => x.Parents.Contains(rootFolder.Id));
-            
+
             var directoriesInfo = new List<LocalDirectoryInfo>();
 
             void CreateFolder(File remoteFolder, string localPath)
@@ -92,25 +92,33 @@ namespace MonoDrive.Application.Services
                 {
                     CreateFolder(childrenFolder, localFolderPath);
                 }
-            }   
+            }
 
             foreach (var folder in rootChildren)
             {
                 CreateFolder(folder, parentDirectoryPath);
             }
+            
+            LocalDirectoryInfo[] newDirectories;
 
             using (var db = new LiteDatabase(LiteDbHelper.GetFilePath(@"MonoDrive.db")))
             {
                 var collection = db.GetCollection<LocalDirectoryInfo>();
-            
+                var localDirectoriesInfo = collection.FindAll().ToArray();
+
+                newDirectories = directoriesInfo.Where(x => 
+                        localDirectoriesInfo.All(y => y.RemoteId != x.RemoteId)).ToArray();
+                
+                //TODO: Remover diretórios excluídos do servidor remoto
+
                 collection.EnsureIndex(x => x.RemoteId, true);
-                collection.InsertBulk(directoriesInfo);
+                collection.InsertBulk(newDirectories);
             }
 
             //var directoriesInfo = parentDirectoryInfo.GetDirectories("*.*", SearchOption.AllDirectories);
 
             _logger.LogInformation(
-                $"Directories successfully created. Elapsed time: {stopwatch.Elapsed.Milliseconds} milliseconds.");
+                $"{newDirectories.Length} new directories successfully created. Elapsed time: {stopwatch.Elapsed.Milliseconds} milliseconds.");
         }
 
         /// <summary>

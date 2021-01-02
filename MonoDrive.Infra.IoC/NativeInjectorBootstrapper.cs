@@ -59,9 +59,7 @@ namespace MonoDrive.Infra.IoC
                 },
                 "user",
                 CancellationToken.None,
-                // The file token.json stores the user's access and refresh tokens, and is created
-                // automatically when the authorization flow completes for the first time.
-                new FileDataStore("token.json", true));
+                new LiteDbDataStore(LiteDbHelper.GetFilePath(@"MonoDrive.db")));
         }
     }
 }
