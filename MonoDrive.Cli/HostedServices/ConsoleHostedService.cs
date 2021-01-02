@@ -50,7 +50,7 @@ namespace MonoDrive.Cli.HostedServices
                         Console.WriteLine($"\tPicture: {googleUserInfo.Picture}");
 
                         //await _googleScriptAppService.GetFoldersUnderRoot();
-                        await _driveAppService.CreateFolders("MonoDrive Test");
+                        await _driveAppService.DownloadAndCreateFolders("MonoDrive Test");
                     }
                     catch (Exception ex)
                     {

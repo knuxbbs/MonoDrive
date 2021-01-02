@@ -21,6 +21,7 @@
     <ItemGroup>
         <Compile Remove="QuickStart.cs" />
         <Compile Remove="Providers\NewGoogleApiServiceProvider.cs" />
+        <Compile Remove="Data\ILiteDbHelper.cs" />
     </ItemGroup>
 
 </Project>

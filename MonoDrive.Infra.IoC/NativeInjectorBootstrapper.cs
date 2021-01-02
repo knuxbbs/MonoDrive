@@ -10,6 +10,7 @@ using Google.Apis.Util.Store;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MonoDrive.Application.Data;
 using MonoDrive.Application.Interfaces;
 using MonoDrive.Application.Presenters;
 using MonoDrive.Application.Providers;
@@ -37,7 +38,7 @@ namespace MonoDrive.Infra.IoC
             //     .ConfigurePrimaryHttpMessageHandler(() => TimeLimiter
             //         .GetFromMaxCountByInterval(60, TimeSpan.FromMinutes(1))
             //         .AsDelegatingHandler());
-
+            
             services.AddSingleton<IMainWindowPresenter, MainWindowPresenter>();
             
             ApplicationContext.RegisterLogger(new ConsoleLogger(LogLevel.Warning));

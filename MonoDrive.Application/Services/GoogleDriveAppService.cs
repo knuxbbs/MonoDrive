@@ -7,8 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
+using LiteDB;
 using Microsoft.Extensions.Logging;
+using MonoDrive.Application.Data;
 using MonoDrive.Application.Interfaces;
+using MonoDrive.Application.Models;
 using File = Google.Apis.Drive.v3.Data.File;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -25,7 +28,6 @@ namespace MonoDrive.Application.Services
             _driveService = serviceProvider.GetDriveService();
             // _driveService.HttpClient.MessageHandler.LogEvents = ConfigurableMessageHandler.LogEventType.RequestHeaders |
             //                                                     ConfigurableMessageHandler.LogEventType.ResponseBody;
-
             _logger = logger;
         }
 
@@ -46,7 +48,7 @@ namespace MonoDrive.Application.Services
         /// </summary>
         /// <param name="parentDirectoryPath">Caminho no qual será reproduzida a estrutura de diretórios remotos</param>
         /// <returns></returns>
-        public async Task CreateFolders(string parentDirectoryPath)
+        public async Task DownloadAndCreateFolders(string parentDirectoryPath)
         {
             //TODO: Tratar possíveis excessões relacionadas à construção do DirectoryInfo antes de baixar as informações
             //var parentDirectoryInfo = new DirectoryInfo(parentDirectoryPath);
@@ -63,16 +65,26 @@ namespace MonoDrive.Application.Services
             var rootFolder = await _driveService.Files.Get("root").ExecuteAsync();
 
             var rootChildren = folders.Where(x => x.Parents.Contains(rootFolder.Id));
-
-            var directoriesIds = new Dictionary<string, DirectoryInfo>();
+            
+            var directoriesInfo = new List<LocalDirectoryInfo>();
 
             void CreateFolder(File remoteFolder, string localPath)
             {
                 var localFolderPath = Path.Combine(localPath, remoteFolder.Name);
-                
+
                 var directoryInfo = new DirectoryInfo(localFolderPath);
                 directoryInfo.Create();
-                directoriesIds.Add(remoteFolder.Id, directoryInfo);
+                directoriesInfo.Add(new LocalDirectoryInfo
+                {
+                    RemoteId = remoteFolder.Id,
+                    Attributes = directoryInfo.Attributes,
+                    Exists = directoryInfo.Exists,
+                    FullName = directoryInfo.FullName,
+                    CreationTimeUtc = directoryInfo.CreationTimeUtc,
+                    LastWriteTimeUtc = directoryInfo.LastWriteTimeUtc,
+                    LastAccessTimeUtc = directoryInfo.LastAccessTimeUtc,
+                    ParentRemoteId = remoteFolder.Parents[0]
+                });
 
                 var children = folders.Where(y => y.Parents.Contains(remoteFolder.Id));
 
@@ -80,11 +92,19 @@ namespace MonoDrive.Application.Services
                 {
                     CreateFolder(childrenFolder, localFolderPath);
                 }
-            }
+            }   
 
             foreach (var folder in rootChildren)
             {
                 CreateFolder(folder, parentDirectoryPath);
+            }
+
+            using (var db = new LiteDatabase(LiteDbHelper.GetFilePath(@"MonoDrive.db")))
+            {
+                var collection = db.GetCollection<LocalDirectoryInfo>();
+            
+                collection.EnsureIndex(x => x.RemoteId, true);
+                collection.InsertBulk(directoriesInfo);
             }
 
             //var directoriesInfo = parentDirectoryInfo.GetDirectories("*.*", SearchOption.AllDirectories);

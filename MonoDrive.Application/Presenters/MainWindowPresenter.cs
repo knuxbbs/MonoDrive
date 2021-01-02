@@ -31,17 +31,14 @@ namespace MonoDrive.Application.Presenters
 
         public async Task Sync(string folderPath)
         {
-            const string folderName = "Teste";
+            const string folderName = "Google Drive Test";
             _localRootFolder = Path.Combine(folderPath, folderName);
 
             Directory.CreateDirectory(_localRootFolder);
 
-            _stopwatch = new Stopwatch();
-            _stopwatch.Start();
-
             //TODO: Salvar informações e configurações do usuário
             //TODO: Obter estrutura de diretórios
-            await _driveAppService.CreateFolders(_localRootFolder);
+            await _driveAppService.DownloadAndCreateFolders(_localRootFolder);
 
             Console.WriteLine("Download finalizado.");
             //await DownloadFiles();
