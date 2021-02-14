@@ -15,7 +15,7 @@ namespace MonoDrive.Gtk
             var hostBuilder = GenericHost.CreateHostBuilder(args);
             hostBuilder.ConfigureServices(RegisterServices);
             
-            var host = hostBuilder.Build();
+            using var host = hostBuilder.Build();
             host.Start();
 
             var app = host.Services.GetService<Startup>();

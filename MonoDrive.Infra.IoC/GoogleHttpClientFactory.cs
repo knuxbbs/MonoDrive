@@ -26,7 +26,7 @@ namespace MonoDrive.Infra.IoC
             return new HttpClientFromMessageHandlerFactory(
                 options => new HttpClientFromMessageHandlerFactory.ConfiguredHttpMessageHandler(
                     serviceProvider.GetRequiredService<IHttpMessageHandlerFactory>()
-                        .CreateHandler("timeLimiter"),
+                        .CreateHandler("TimeLimiter"),
                     options.MayPerformDecompression,
                     options.MayHandleRedirects
                 ));

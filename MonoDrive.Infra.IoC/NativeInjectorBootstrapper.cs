@@ -29,14 +29,13 @@ namespace MonoDrive.Infra.IoC
             services.AddSingleton<IConfigurableHttpClientInitializer>(x =>
                 GetUserCredential(googleClientCredentials).Result);
             services.AddSingleton<IHttpClientFactory>(GoogleHttpClientFactory.CreateHttpClientFromMessageHandler);
-            //services.AddSingleton<IHttpClientFactory, GoogleHttpClientFactory>();
-            
+
             //Reference: https://github.com/googleapis/google-api-dotnet-client/blob/master/Src/Support/IntegrationTests/HttpClientFromMessageHandlerFactoryTests.cs
-            services.AddHttpClient("timeLimiter")
+            services.AddHttpClient("TimeLimiter")
                 .ConfigurePrimaryHttpMessageHandler(() => TimeLimiter
                     .GetFromMaxCountByInterval(1000, TimeSpan.FromSeconds(100))
                     .AsDelegatingHandler());
-            
+
             services.AddSingleton<IGoogleApiServiceProvider, GoogleApiServiceProvider>();
 
             services.AddSingleton<IGoogleOAuthAppService, GoogleOAuthAppService>();
