@@ -24,17 +24,17 @@ namespace MonoDrive.Application.Providers
 
         public DriveService GetDriveService()
         {
-            return new DriveService(_initializer);
+            return new(_initializer);
         }
 
         public Oauth2Service GetOauth2Service()
         {
-            return new Oauth2Service(_initializer);
+            return new(_initializer);
         }
         
         public ScriptService GetScriptService()
         {
-            return new ScriptService(_initializer);
+            return new(_initializer);
         }
     }
 }
