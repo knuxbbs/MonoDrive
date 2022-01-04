@@ -10,7 +10,7 @@ namespace MonoDrive.Cli
     {
         static async Task Main(string[] args)
         {
-            await GenericHost.CreateHostBuilder(args)
+            await GenericHost.GetBuilder(args)
                 .ConfigureServices(RegisterServices)
                 .RunConsoleAsync();
         }

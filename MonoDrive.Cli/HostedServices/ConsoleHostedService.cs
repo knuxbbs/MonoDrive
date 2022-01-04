@@ -12,19 +12,16 @@ namespace MonoDrive.Cli.HostedServices
     {
         private readonly IGoogleOAuthAppService _oAuthAppService;
         private readonly IGoogleDriveAppService _driveAppService;
-        private readonly IGoogleScriptAppService _googleScriptAppService;
         private readonly ILogger _logger;
         private readonly IHostApplicationLifetime _appLifetime;
 
         public ConsoleHostedService(IGoogleOAuthAppService oAuthAppService,
             IGoogleDriveAppService driveAppService,
-            IGoogleScriptAppService googleScriptAppService,
             ILogger<ConsoleHostedService> logger,
             IHostApplicationLifetime appLifetime)
         {
             _oAuthAppService = oAuthAppService;
             _driveAppService = driveAppService;
-            _googleScriptAppService = googleScriptAppService;
             _logger = logger;
             _appLifetime = appLifetime;
         }

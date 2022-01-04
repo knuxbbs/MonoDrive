@@ -6,7 +6,7 @@ namespace MonoDrive.Infra.IoC
 {
     public class GenericHost
     {
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        public static IHostBuilder GetBuilder(string[] args) =>
             new HostBuilder()
                 .ConfigureAppConfiguration((builderContext, config) =>
                 {

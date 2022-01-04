@@ -12,7 +12,7 @@ namespace MonoDrive.Gtk
         {
             global::Gtk.Application.Init();
             
-            var hostBuilder = GenericHost.CreateHostBuilder(args);
+            var hostBuilder = GenericHost.GetBuilder(args);
             hostBuilder.ConfigureServices(RegisterServices);
             
             using var host = hostBuilder.Build();

@@ -10,7 +10,7 @@ namespace MonoDrive.Application.Test
     {
         protected AppServiceBaseTest(ITestOutputHelper outputHelper)
         {
-            var host = GenericHost.CreateHostBuilder(null)
+            var host = GenericHost.GetBuilder(null)
                 .ConfigureLogging(builder => builder.AddXUnit(outputHelper))
                 .Build();
             
