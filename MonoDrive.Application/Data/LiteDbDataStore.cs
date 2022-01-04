@@ -1,18 +1,18 @@
 using System;
 using System.Threading.Tasks;
 using Google.Apis.Util.Store;
-using LiteDB;
+using LiteDB.Async;
 
 namespace MonoDrive.Application.Data
 {
     public class LiteDbDataStore : IDataStore 
     {
-        public LiteDbDataStore(string connectionString)
+        public LiteDbDataStore(ILiteDatabaseAsync liteDatabaseAsync)
         {
-            Database = new LiteDatabase(connectionString);
+            Database = liteDatabaseAsync;
         }
 
-        private LiteDatabase Database { get; }
+        private ILiteDatabaseAsync Database { get; }
         private const string CollectionName = "token";
 
         public Task StoreAsync<T>(string key, T value)
@@ -23,9 +23,7 @@ namespace MonoDrive.Application.Data
             }
 
             var collection = Database.GetCollection<T>(CollectionName);
-            collection.Upsert(GenerateStoredKey(key, typeof(T)), value);
-
-            return Task.CompletedTask;
+            return collection.UpsertAsync(GenerateStoredKey(key, typeof(T)), value);
         }
 
         public Task DeleteAsync<T>(string key)
@@ -36,9 +34,7 @@ namespace MonoDrive.Application.Data
             }
 
             var collection = Database.GetCollection<T>(CollectionName);
-            collection.Delete(GenerateStoredKey(key, typeof(T)));
-
-            return Task.CompletedTask;
+            return collection.DeleteAsync(GenerateStoredKey(key, typeof(T)));
         }
 
         public Task<T> GetAsync<T>(string key)
@@ -47,29 +43,15 @@ namespace MonoDrive.Application.Data
             {
                 throw new ArgumentException("Key MUST have a value");
             }
-            
-            var taskCompletionSource = new TaskCompletionSource<T>();
-            
+
             var collection = Database.GetCollection<T>(CollectionName);
             
-            try
-            {
-                var value = collection.FindById(GenerateStoredKey(key, typeof(T)));
-                taskCompletionSource.SetResult(value);
-            }
-            catch (Exception ex)
-            {
-                taskCompletionSource.SetException(ex);
-            }
-            
-            return taskCompletionSource.Task;
+            return collection.FindByIdAsync(GenerateStoredKey(key, typeof(T)));
         }
 
         public Task ClearAsync()
         {
-            Database.DropCollection(CollectionName);
-
-            return Task.CompletedTask;
+            return Database.DropCollectionAsync(CollectionName);
         }
 
         private static string GenerateStoredKey(string key, Type t)

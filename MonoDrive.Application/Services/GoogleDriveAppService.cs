@@ -7,9 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
-using LiteDB;
+using LiteDB.Async;
 using Microsoft.Extensions.Logging;
-using MonoDrive.Application.Data;
 using MonoDrive.Application.Interfaces;
 using MonoDrive.Application.Models;
 using GoogleDriveFile = Google.Apis.Drive.v3.Data.File;
@@ -21,14 +20,16 @@ namespace MonoDrive.Application.Services
     public class GoogleDriveAppService : IGoogleDriveAppService
     {
         private readonly DriveService _driveService;
+        private readonly ILiteDatabaseAsync _liteDatabaseAsync;
         private readonly ILogger _logger;
 
-        public GoogleDriveAppService(IGoogleApiServiceProvider serviceProvider,
+        public GoogleDriveAppService(IGoogleApiServiceProvider serviceProvider, ILiteDatabaseAsync liteDatabaseAsync,
             ILogger<GoogleDriveAppService> logger)
         {
             _driveService = serviceProvider.GetDriveService();
             // _driveService.HttpClient.MessageHandler.LogEvents = ConfigurableMessageHandler.LogEventType.RequestHeaders |
             //                                                     ConfigurableMessageHandler.LogEventType.ResponseBody;
+            _liteDatabaseAsync = liteDatabaseAsync;
             _logger = logger;
         }
 
@@ -69,10 +70,8 @@ namespace MonoDrive.Application.Services
 
             var rootChildren = folders.Where(x => x.Parents.Contains(rootFolder.Id));
 
-            using var db = new LiteDatabase(LiteDbHelper.GetFilePath(@"MonoDrive.db"));
-
-            var collection = db.GetCollection<LocalDirectoryInfo>();
-            var localDirectoriesInfo = collection.FindAll().ToArray();
+            var collection = _liteDatabaseAsync.GetCollection<LocalDirectoryInfo>();
+            var localDirectoriesInfo = await collection.FindAllAsync();
 
             //TODO: Criar apenas diretórios novos
             var newDirectories = rootChildren.Where(x =>
@@ -113,8 +112,8 @@ namespace MonoDrive.Application.Services
 
             //TODO: Remover diretórios excluídos do servidor remoto
 
-            collection.EnsureIndex(x => x.RemoteId, true);
-            collection.InsertBulk(directoriesInfo);
+            await collection.EnsureIndexAsync(x => x.RemoteId, true);
+            await collection.InsertBulkAsync(directoriesInfo);
 
             //var directoriesInfo = parentDirectoryInfo.GetDirectories("*.*", SearchOption.AllDirectories);
 
@@ -122,7 +121,6 @@ namespace MonoDrive.Application.Services
                 "{Count} new directories successfully created. Elapsed time: {Milliseconds} milliseconds",
                 directoriesInfo.Count, stopwatch.Elapsed.Milliseconds);
         }
-        
 
         /// <summary>
         /// Baixa estrutura de diretórios 
@@ -157,7 +155,8 @@ namespace MonoDrive.Application.Services
             }
 
             _logger.LogInformation(
-                "{Count} folders downloaded. Elapsed time: {Seconds} seconds", files.Count, stopwatch.Elapsed.Seconds);
+                "{Count} folders downloaded. Elapsed time: {Milliseconds} milliseconds", files.Count,
+                stopwatch.Elapsed.Milliseconds);
 
             return files;
         }

@@ -8,6 +8,7 @@ using Google.Apis.Drive.v3;
 using Google.Apis.Http;
 using Google.Apis.Logging;
 using Google.Apis.Oauth2.v2;
+using LiteDB.Async;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,10 +25,13 @@ namespace MonoDrive.Infra.IoC
     {
         public static void RegisterServices(HostBuilderContext builderContext, IServiceCollection services)
         {
+            var liteDatabaseAsync = new LiteDatabaseAsync(LiteDbHelper.GetFilePath(@"MonoDrive.db"));
+            services.AddSingleton<ILiteDatabaseAsync>(liteDatabaseAsync);
+
             var googleClientCredentials = builderContext.Configuration.GetSection("installed");
 
             services.AddSingleton<IConfigurableHttpClientInitializer>(x =>
-                GetUserCredential(googleClientCredentials).Result);
+                GetUserCredential(googleClientCredentials, liteDatabaseAsync).Result);
             services.AddSingleton<IHttpClientFactory>(GoogleHttpClientFactory.CreateHttpClientFromMessageHandler);
 
             //Reference: https://github.com/googleapis/google-api-dotnet-client/blob/master/Src/Support/IntegrationTests/HttpClientFromMessageHandlerFactoryTests.cs
@@ -47,7 +51,8 @@ namespace MonoDrive.Infra.IoC
             ApplicationContext.RegisterLogger(new ConsoleLogger(LogLevel.Warning));
         }
 
-        private static Task<UserCredential> GetUserCredential(IConfiguration configuration)
+        private static Task<UserCredential> GetUserCredential(IConfiguration configuration,
+            ILiteDatabaseAsync liteDatabaseAsync)
         {
             return GoogleWebAuthorizationBroker.AuthorizeAsync(
                 new ClientSecrets
@@ -62,7 +67,7 @@ namespace MonoDrive.Infra.IoC
                 },
                 "user",
                 CancellationToken.None,
-                new LiteDbDataStore(LiteDbHelper.GetFilePath(@"MonoDrive.db")));
+                new LiteDbDataStore(liteDatabaseAsync));
         }
     }
 }
