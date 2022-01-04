@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -17,6 +16,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace MonoDrive.Application.Services
 {
+    //Talvez isso aqui deva ser uma facade
     public class GoogleDriveAppService : IGoogleDriveAppService
     {
         private readonly DriveService _driveService;
@@ -50,10 +50,11 @@ namespace MonoDrive.Application.Services
         /// <returns></returns>
         public async Task DownloadAndCreateFolders(string parentDirectoryPath)
         {
+            //TODO: Este método pode ser desacoplado do Google Drive
             //TODO: Tratar possíveis excessões relacionadas à construção do DirectoryInfo antes de baixar as informações
             //var parentDirectoryInfo = new DirectoryInfo(parentDirectoryPath);
 
-            var folders = await DownloadFoldersStructure();
+            var folders = await GetRemoteFoldersTree();
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -65,6 +66,15 @@ namespace MonoDrive.Application.Services
             var rootFolder = await _driveService.Files.Get("root").ExecuteAsync();
 
             var rootChildren = folders.Where(x => x.Parents.Contains(rootFolder.Id));
+
+            using var db = new LiteDatabase(LiteDbHelper.GetFilePath(@"MonoDrive.db"));
+
+            var collection = db.GetCollection<LocalDirectoryInfo>();
+            var localDirectoriesInfo = collection.FindAll().ToArray();
+
+            //TODO: Criar apenas diretórios novos
+            var newDirectories = rootChildren.Where(x =>
+                localDirectoriesInfo.All(y => y.RemoteId != x.Id));
 
             var directoriesInfo = new List<LocalDirectoryInfo>();
 
@@ -94,38 +104,28 @@ namespace MonoDrive.Application.Services
                 }
             }
 
-            foreach (var folder in rootChildren)
+            foreach (var folder in newDirectories)
             {
                 CreateFolder(folder, parentDirectoryPath);
             }
-            
-            LocalDirectoryInfo[] newDirectories;
 
-            using (var db = new LiteDatabase(LiteDbHelper.GetFilePath(@"MonoDrive.db")))
-            {
-                var collection = db.GetCollection<LocalDirectoryInfo>();
-                var localDirectoriesInfo = collection.FindAll().ToArray();
+            //TODO: Remover diretórios excluídos do servidor remoto
 
-                newDirectories = directoriesInfo.Where(x => 
-                        localDirectoriesInfo.All(y => y.RemoteId != x.RemoteId)).ToArray();
-                
-                //TODO: Remover diretórios excluídos do servidor remoto
-
-                collection.EnsureIndex(x => x.RemoteId, true);
-                collection.InsertBulk(newDirectories);
-            }
+            collection.EnsureIndex(x => x.RemoteId, true);
+            collection.InsertBulk(directoriesInfo);
 
             //var directoriesInfo = parentDirectoryInfo.GetDirectories("*.*", SearchOption.AllDirectories);
 
             _logger.LogInformation(
-                $"{newDirectories.Length} new directories successfully created. Elapsed time: {stopwatch.Elapsed.Milliseconds} milliseconds.");
+                "{Count} new directories successfully created. Elapsed time: {Milliseconds} milliseconds",
+                directoriesInfo.Count, stopwatch.Elapsed.Milliseconds);
         }
 
         /// <summary>
         /// Baixa estrutura de diretórios 
         /// </summary>
         /// <returns></returns>
-        private async Task<IList<File>> DownloadFoldersStructure()
+        private async Task<IList<File>> GetRemoteFoldersTree()
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -154,7 +154,7 @@ namespace MonoDrive.Application.Services
             }
 
             _logger.LogInformation(
-                $"{files.Count} folders downloaded. Elapsed time: {stopwatch.Elapsed.Seconds} seconds.");
+                "{Count} folders downloaded. Elapsed time: {Seconds} seconds", files.Count, stopwatch.Elapsed.Seconds);
 
             return files;
         }
