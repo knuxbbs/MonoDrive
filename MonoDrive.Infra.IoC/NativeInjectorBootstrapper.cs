@@ -25,13 +25,13 @@ namespace MonoDrive.Infra.IoC
     {
         public static void RegisterServices(HostBuilderContext builderContext, IServiceCollection services)
         {
-            var liteDatabaseAsync = new LiteDatabaseAsync(LiteDbHelper.GetFilePath(@"MonoDrive.db"));
-            services.AddSingleton<ILiteDatabaseAsync>(liteDatabaseAsync);
+            services.AddSingleton<ILiteDatabaseAsync>(x =>
+                new LiteDatabaseAsync(LiteDbHelper.GetFilePath(@"MonoDrive.db")));
 
             var googleClientCredentials = builderContext.Configuration.GetSection("installed");
 
             services.AddSingleton<IConfigurableHttpClientInitializer>(x =>
-                GetUserCredential(googleClientCredentials, liteDatabaseAsync).Result);
+                GetUserCredential(googleClientCredentials, x.GetService<ILiteDatabaseAsync>()).Result);
             services.AddSingleton<IHttpClientFactory>(GoogleHttpClientFactory.CreateHttpClientFromMessageHandler);
 
             //Reference: https://github.com/googleapis/google-api-dotnet-client/blob/master/Src/Support/IntegrationTests/HttpClientFromMessageHandlerFactoryTests.cs
