@@ -1,4 +1,4 @@
-namespace MonoDrive.Application
+namespace MonoDrive.Application.Models
 {
     public class GoogleUserInfo
     {

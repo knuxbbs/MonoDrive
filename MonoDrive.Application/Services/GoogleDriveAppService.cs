@@ -222,7 +222,7 @@ namespace MonoDrive.Application.Services
             }
 
             _logger.LogInformation(
-                "{Count} folders downloaded. Elapsed time: {Milliseconds} milliseconds", files.Count,
+                "{Count} directories downloaded. Elapsed time: {Milliseconds} milliseconds", files.Count,
                 stopwatch.Elapsed.Milliseconds);
 
             return files;

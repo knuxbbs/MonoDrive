@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using MonoDrive.Application.Models;
 
 namespace MonoDrive.Application.Interfaces
 {
