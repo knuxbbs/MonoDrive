@@ -5,8 +5,6 @@ namespace MonoDrive.Application.Models
 {
     public class LocalDirectoryInfo
     {
-        public string RemoteId { get; set; }
-
         /// <summary>
         /// Gets or sets the attributes for the current file or directory.
         /// </summary>
@@ -25,17 +23,19 @@ namespace MonoDrive.Application.Models
         /// <summary>
         /// Gets or sets the creation time, in coordinated universal time (UTC), of the current file or directory.
         /// </summary>
-        public DateTime CreationTimeUtc { get; set; }
+        public DateTimeOffset CreationTimeUtc { get; set; }
 
         /// <summary>
         /// Gets or sets the time, in coordinated universal time (UTC), when the current file or directory was last written to.
         /// </summary>
-        public DateTime LastWriteTimeUtc { get; set; }
+        public DateTimeOffset LastWriteTimeUtc { get; set; }
         
         /// <summary>
         /// Gets or sets the time, in coordinated universal time (UTC), that the current file or directory was last accessed.
         /// </summary>
-        public DateTime LastAccessTimeUtc { get; set; }
+        public DateTimeOffset LastAccessTimeUtc { get; set; }
+        
+        public string RemoteId { get; set; }
         
         public string ParentRemoteId { get; set; }
     }

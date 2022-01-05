@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
+using LiteDB;
 using LiteDB.Async;
 using Microsoft.Extensions.Logging;
 using MonoDrive.Application.Interfaces;
@@ -50,6 +52,7 @@ namespace MonoDrive.Application.Services
         /// </summary>
         /// <param name="parentDirectoryPath">Caminho no qual será reproduzida a estrutura de diretórios remotos</param>
         /// <param name="cancellationToken"></param>
+        /// <exception cref="OperationCanceledException"></exception>
         /// <returns></returns>
         public async Task DownloadAndCreateFolders(string parentDirectoryPath,
             CancellationToken cancellationToken = default)
@@ -59,23 +62,18 @@ namespace MonoDrive.Application.Services
             //var parentDirectoryInfo = new DirectoryInfo(parentDirectoryPath);
 
             var folders = await GetRemoteFoldersTree(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
 
             var stopwatch = Stopwatch.StartNew();
 
             //Pastas compartilhadas são retornadas como órfãs
             folders = folders.Where(x => x.Parents != null).ToArray();
-            //TODO: Verificar se é interessante salvar o id da pasta raíz
+
             //A pasta raíz não é retornada pela consulta de diretórios
-            var rootFolder = await _driveService.Files.Get("root").ExecuteAsync(cancellationToken);
-
-            var rootChildren = folders.Where(x => x.Parents.Contains(rootFolder.Id));
-
-            var collection = _liteDatabaseAsync.GetCollection<LocalDirectoryInfo>();
-            var localDirectoriesInfo = await collection.FindAllAsync();
+            var rootFolderId = await GetRemoteRootFolderId(cancellationToken);
 
             //TODO: Criar apenas diretórios novos
-            var newDirectories = rootChildren.Where(x =>
-                localDirectoriesInfo.All(y => y.RemoteId != x.Id));
+            var newDirectories = await FilterNewRemoteFolders(folders, rootFolderId);
 
             var directoriesInfo = new List<LocalDirectoryInfo>();
 
@@ -87,13 +85,13 @@ namespace MonoDrive.Application.Services
                 directoryInfo.Create();
                 directoriesInfo.Add(new LocalDirectoryInfo
                 {
-                    RemoteId = remoteFolder.Id,
                     Attributes = directoryInfo.Attributes,
                     Exists = directoryInfo.Exists,
                     FullName = directoryInfo.FullName,
                     CreationTimeUtc = directoryInfo.CreationTimeUtc,
                     LastWriteTimeUtc = directoryInfo.LastWriteTimeUtc,
                     LastAccessTimeUtc = directoryInfo.LastAccessTimeUtc,
+                    RemoteId = remoteFolder.Id,
                     ParentRemoteId = remoteFolder.Parents[0]
                 });
 
@@ -111,15 +109,55 @@ namespace MonoDrive.Application.Services
             }
 
             //TODO: Remover diretórios excluídos do servidor remoto
-
-            await collection.EnsureIndexAsync(x => x.RemoteId, true);
-            await collection.InsertBulkAsync(directoriesInfo);
+            await SaveLocalDirectoriesInfo(directoriesInfo);
 
             //var directoriesInfo = parentDirectoryInfo.GetDirectories("*.*", SearchOption.AllDirectories);
 
             _logger.LogInformation(
                 "{Count} new directories successfully created. Elapsed time: {Milliseconds} milliseconds",
                 directoriesInfo.Count, stopwatch.Elapsed.Milliseconds);
+        }
+
+        private async Task SaveLocalDirectoriesInfo(ICollection<LocalDirectoryInfo> directoriesInfo)
+        {
+            if (directoriesInfo.Count <= 0)
+            {
+                return;
+            }
+
+            var collection = _liteDatabaseAsync.GetCollection<LocalDirectoryInfo>();
+
+            await collection.EnsureIndexAsync(x => x.RemoteId, true);
+            await collection.InsertBulkAsync(directoriesInfo);
+        }
+        
+        private async Task<IEnumerable<GoogleDriveFile>> FilterNewRemoteFolders(IEnumerable<GoogleDriveFile> folders,
+            string rootFolderId)
+        {
+            var rootChildren = folders.Where(x => x.Parents.Contains(rootFolderId));
+
+            var collection = _liteDatabaseAsync.GetCollection<LocalDirectoryInfo>();
+            var localDirectoriesInfo = await collection.FindAllAsync();
+            
+            return rootChildren.Where(x => localDirectoriesInfo.All(y => y.RemoteId != x.Id));
+        }
+
+        private async Task<string> GetRemoteRootFolderId(CancellationToken cancellationToken = default)
+        {
+            var collection = _liteDatabaseAsync.GetCollection("RootDirectoryInfo");
+            var bsonDocument = await collection.FindOneAsync("$._id = 1");
+
+            if (bsonDocument != null)
+            {
+                return bsonDocument["RemoteId"].AsString;
+            }
+
+            var rootFolder = await _driveService.Files.Get("root").ExecuteAsync(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await collection.InsertAsync(new BsonDocument {["_id"] = 1, ["RemoteId"] = rootFolder.Id});
+
+            return rootFolder.Id;
         }
 
         /// <summary>
