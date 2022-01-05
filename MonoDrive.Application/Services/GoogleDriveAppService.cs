@@ -62,7 +62,6 @@ namespace MonoDrive.Application.Services
             //var parentDirectoryInfo = new DirectoryInfo(parentDirectoryPath);
 
             var folders = await GetRemoteFoldersTree(cancellationToken);
-            cancellationToken.ThrowIfCancellationRequested();
 
             var stopwatch = Stopwatch.StartNew();
 
@@ -180,8 +179,7 @@ namespace MonoDrive.Application.Services
             var files = new List<GoogleDriveFile>();
             FileList fileList = null;
 
-            while ((fileList == null || !string.IsNullOrWhiteSpace(fileList.NextPageToken)) &&
-                   !cancellationToken.IsCancellationRequested)
+            while (fileList == null || !string.IsNullOrWhiteSpace(fileList.NextPageToken))
             {
                 if (fileList != null)
                 {
@@ -189,6 +187,8 @@ namespace MonoDrive.Application.Services
                 }
 
                 fileList = await listRequest.ExecuteAsync(cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                
                 files.AddRange(fileList.Files);
             }
 
