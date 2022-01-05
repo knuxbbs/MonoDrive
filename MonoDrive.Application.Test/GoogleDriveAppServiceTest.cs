@@ -18,7 +18,7 @@ namespace MonoDrive.Application.Test
         [Fact]
         public async Task DownloadAndCreateFolders()
         {
-            await _driveAppService.DownloadAndCreateFolders("MonoDrive Test");
+            await _driveAppService.DownloadAndCreateDirectories("MonoDrive Test");
         }
     }
 }

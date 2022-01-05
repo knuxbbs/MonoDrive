@@ -5,7 +5,7 @@ namespace MonoDrive.Application.Interfaces
 {
     public interface IGoogleDriveAppService : IAppServiceBase
     {
-        Task DownloadAndCreateFolders(string parentDirectoryPath, CancellationToken cancellationToken = default);
+        Task DownloadAndCreateDirectories(string parentDirectoryPath, CancellationToken cancellationToken = default);
         Task DownloadFiles();
     }
 }

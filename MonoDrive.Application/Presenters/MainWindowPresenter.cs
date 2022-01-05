@@ -38,7 +38,7 @@ namespace MonoDrive.Application.Presenters
 
             //TODO: Salvar informações e configurações do usuário
             //TODO: Obter estrutura de diretórios
-            await _driveAppService.DownloadAndCreateFolders(_localRootFolder);
+            await _driveAppService.DownloadAndCreateDirectories(_localRootFolder);
 
             Console.WriteLine("Download finalizado.");
             //await DownloadFiles();
