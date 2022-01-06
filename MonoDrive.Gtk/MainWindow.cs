@@ -24,9 +24,6 @@ namespace MonoDrive.Gtk
         public MainWindow(IMainWindowPresenter mainWindowPresenter) : this(new Builder("MainWindow.glade"))
         {
             _mainWindowPresenter = mainWindowPresenter;
-            
-            //Reference: https://github.com/Ryujinx/Ryujinx/blob/master/Ryujinx/Ui/Windows/AmiiboWindow.cs
-            _ = LoadContentAsync();
         }
 
         private MainWindow(Builder builder) : base(builder.GetObject("MainWindow").Handle)
@@ -46,11 +43,11 @@ namespace MonoDrive.Gtk
                 _progressBar.Text = $"{args.CompletedFolders} de {args.TotalFolders} diretórios baixados.";
                 _progressBar.Fraction = args.CompletedFolders / (double) args.TotalFolders;
             });
-            
+
             DeleteEvent += Window_DeleteEvent;
         }
 
-        private async Task LoadContentAsync()
+        public async Task LoadContentAsync()
         {
             _userLabel.Text = await _mainWindowPresenter.GetUserEmail();
         }
@@ -75,7 +72,7 @@ namespace MonoDrive.Gtk
 
         private void Window_DeleteEvent(object sender, DeleteEventArgs a)
         {
-            global::Gtk.Application.Quit();
+            ((GLib.Application) Application).Quit();
         }
     }
 }

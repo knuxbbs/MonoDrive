@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GtkSharp" Version="3.22.25.56" />
+    <PackageReference Include="GtkSharp" Version="3.24.24.34" />
   </ItemGroup>
 
   <ItemGroup>

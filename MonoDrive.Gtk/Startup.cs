@@ -19,15 +19,23 @@ namespace MonoDrive.Gtk
         {
             // ReSharper disable once StringLiteralTypo
             var app = new global::Gtk.Application("com.knuxbbs.monodrive", ApplicationFlags.None);
-            app.Register(Cancellable.Current);
 
             // Bind any unhandled exceptions in the GTK UI so that they are logged.
             ExceptionManager.UnhandledException += OnGLibUnhandledException;
 
-            app.AddWindow(_mainWindow);
-            _mainWindow.Show();
+            app.Startup += async delegate
+            {
+                app.AddWindow(_mainWindow);
+                await _mainWindow.LoadContentAsync();
+                _mainWindow.ShowAll();
+            };
 
-            global::Gtk.Application.Run();
+            app.Activated += delegate
+            {
+                _mainWindow.Present();
+            };
+            
+            ((GLib.Application) app).Run();
         }
 
         /// <summary>
@@ -43,7 +51,7 @@ namespace MonoDrive.Gtk
                     DialogFlags.Modal | DialogFlags.DestroyWithParent,
                     "Okay", ResponseType.Ok);
 
-                ((Box)dialog.Child).Add(new Label(unhandledException.Message));
+                ((Box) dialog.Child).Add(new Label(unhandledException.Message));
 
                 dialog.ShowAll();
                 dialog.Run();
