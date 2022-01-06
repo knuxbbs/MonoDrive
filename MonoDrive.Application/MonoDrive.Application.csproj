@@ -6,8 +6,8 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="Google.Apis.Drive.v3" Version="1.50.0.2229" />
-        <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.50.0.1869" />
+        <PackageReference Include="Google.Apis.Drive.v3" Version="1.55.0.2502" />
+        <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.55.0.1869" />
         <PackageReference Include="LiteDB.Async" Version="0.0.11" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0" />
     </ItemGroup>
