@@ -137,27 +137,6 @@ namespace MonoDrive.Application.Services
             return directoriesInfo;
         }
 
-        // private List<LocalDirectoryInfo> CreateDirectories(string parentDirectoryPath,
-        //     IEnumerable<GoogleDriveFile> remoteDirectories)
-        // {
-        //     //var remoteDirectoriesStack = new Stack<GoogleDriveFile>(remoteDirectories);
-        //     var directories = new Stack<string>(20);
-        //     directories.Push(parentDirectoryPath);
-        //
-        //     while (directories.Count > 0)
-        //     {
-        //         var localPath = directories.Pop();
-        //         //var localFolderPath = Path.Combine(localPath, remoteFolder.Name);
-        //         
-        //         var directoryInfo = new DirectoryInfo(localPath);
-        //         directoryInfo.Create();
-        //         
-        //         var children = remoteDirectories.Where(y => y.Parents.Contains(remoteFolder.Id));
-        //     }
-        //     
-        //     return null;
-        // }
-
         private async Task<IEnumerable<GoogleDriveFile>> FilterNewRemoteDirectories(
             IEnumerable<GoogleDriveFile> remoteDirectories, string rootDirectoryId)
         {
