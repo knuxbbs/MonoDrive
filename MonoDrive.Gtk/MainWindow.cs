@@ -50,6 +50,14 @@ namespace MonoDrive.Gtk
         public async Task LoadContentAsync()
         {
             _userLabel.Text = await _mainWindowPresenter.GetUserEmail();
+            
+            var localRootDirectory = await _mainWindowPresenter.GetLocalRootDirectory();
+
+            if (!string.IsNullOrEmpty(localRootDirectory))
+            {
+                _folderLabel.Text = localRootDirectory;
+                _fileChooser.SelectFilename(localRootDirectory);
+            }
         }
 
         private async void LoginButton_Clicked(object sender, EventArgs a)
@@ -67,6 +75,7 @@ namespace MonoDrive.Gtk
 
         private void SyncButton_Clicked(object sender, EventArgs a)
         {
+            //TODO: Exceções lançadas dentro de eventos não estão sendo capturadas
             _mainWindowPresenter.Sync(_fileChooser.Filename);
         }
 

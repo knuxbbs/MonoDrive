@@ -1,18 +1,19 @@
 using System;
 using GLib;
 using Gtk;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace MonoDrive.Gtk
 {
     public class Startup
     {
-        private static IServiceProvider ServiceProvider { get; set; }
         private readonly MainWindow _mainWindow;
+        private readonly ILogger<Startup> _logger;
 
-        public Startup(MainWindow mainWindow)
+        public Startup(MainWindow mainWindow, ILogger<Startup> logger)
         {
             _mainWindow = mainWindow;
+            _logger = logger;
         }
 
         public void Run()
@@ -42,13 +43,13 @@ namespace MonoDrive.Gtk
         /// Passes any unhandled exceptions from the GTK UI to the generic handler.
         /// </summary>
         /// <param name="args">The event object containing the information about the exception.</param>
-        private static void OnGLibUnhandledException(UnhandledExceptionArgs args)
+        private void OnGLibUnhandledException(UnhandledExceptionArgs args)
         {
             if (args.ExceptionObject is Exception unhandledException)
             {
-                //TODO: Caso haja algum erro na construção do host, o ServiceProvider virá como nulo
-                var dialog = new Dialog("Error", ServiceProvider.GetService<MainWindow>(),
-                    DialogFlags.Modal | DialogFlags.DestroyWithParent,
+                _logger.LogError(unhandledException, unhandledException.Message);
+                
+                var dialog = new Dialog("Error", _mainWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent,
                     "Okay", ResponseType.Ok);
 
                 ((Box) dialog.Child).Add(new Label(unhandledException.Message));

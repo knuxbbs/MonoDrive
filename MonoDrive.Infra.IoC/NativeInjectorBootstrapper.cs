@@ -44,6 +44,7 @@ namespace MonoDrive.Infra.IoC
 
             services.AddSingleton<IGoogleOAuthAppService, GoogleOAuthAppService>();
             services.AddSingleton<IGoogleDriveAppService, GoogleDriveAppService>();
+            services.AddSingleton<ISettingsAppService, SettingsAppService>();
 
             services.AddSingleton<IMainWindowPresenter, MainWindowPresenter>();
 

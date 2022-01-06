@@ -10,35 +10,45 @@ namespace MonoDrive.Application.Presenters
     {
         private readonly IGoogleOAuthAppService _oAuthAppService;
         private readonly IGoogleDriveAppService _driveAppService;
+        private readonly ISettingsAppService _settingsAppService;
 
         public MainWindowPresenter(IGoogleOAuthAppService oAuthAppService,
-            IGoogleDriveAppService driveAppService)
+            IGoogleDriveAppService driveAppService, ISettingsAppService settingsAppService)
         {
             _oAuthAppService = oAuthAppService;
             _driveAppService = driveAppService;
+            _settingsAppService = settingsAppService;
         }
 
         //public int RequestsCount = 0;
 
         private Stopwatch _stopwatch;
 
-        private string _localRootFolder;
+        private string _localRootDirectory;
 
         public async Task<string> GetUserEmail()
         {
             return (await _oAuthAppService.GetUserInfo()).Email;
         }
 
+        public async Task<string> GetLocalRootDirectory()
+        {
+            var appSettings = await _settingsAppService.GetAppSettings();
+
+            return appSettings?.LocalRootDirectory;
+        }
+
         public async Task Sync(string folderPath)
         {
             const string folderName = "Google Drive Test";
-            _localRootFolder = Path.Combine(folderPath, folderName);
+            _localRootDirectory = Path.Combine(folderPath, folderName);
 
-            Directory.CreateDirectory(_localRootFolder);
+            await _settingsAppService.UpdateLocalRootDirectory(folderPath);
+            Directory.CreateDirectory(_localRootDirectory);
 
             //TODO: Salvar informações e configurações do usuário
             //TODO: Obter estrutura de diretórios
-            await _driveAppService.DownloadAndCreateDirectories(_localRootFolder);
+            await _driveAppService.DownloadAndCreateDirectories(_localRootDirectory);
 
             Console.WriteLine("Download finalizado.");
             //await DownloadFiles();
