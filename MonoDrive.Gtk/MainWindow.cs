@@ -44,10 +44,11 @@ namespace MonoDrive.Gtk
                 _progressBar.Fraction = args.CompletedFolders / (double) args.TotalFolders;
             });
 
+            Shown += Window_OnShown;
             DeleteEvent += Window_DeleteEvent;
         }
 
-        public async Task LoadContentAsync()
+        private async Task LoadContentAsync()
         {
             _userLabel.Text = await _mainWindowPresenter.GetUserEmail();
             
@@ -58,6 +59,12 @@ namespace MonoDrive.Gtk
                 _folderLabel.Text = localRootDirectory;
                 _fileChooser.SelectFilename(localRootDirectory);
             }
+        }
+        
+        [GLib.ConnectBefore]
+        private async void Window_OnShown(object sender, EventArgs args)
+        {
+            await LoadContentAsync();
         }
 
         private async void LoginButton_Clicked(object sender, EventArgs a)

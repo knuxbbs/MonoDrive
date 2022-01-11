@@ -24,11 +24,11 @@ namespace MonoDrive.Gtk
             // Bind any unhandled exceptions in the GTK UI so that they are logged.
             ExceptionManager.UnhandledException += OnGLibUnhandledException;
 
-            app.Startup += async delegate
+            app.Startup += delegate
             {
                 app.AddWindow(_mainWindow);
-                await _mainWindow.LoadContentAsync();
                 _mainWindow.ShowAll();
+                //TODO: O aplicativo deve verificar se existem arquivos novos ou apagados
             };
 
             app.Activated += delegate
