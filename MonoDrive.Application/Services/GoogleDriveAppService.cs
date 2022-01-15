@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -90,6 +89,10 @@ namespace MonoDrive.Application.Services
 
         private async Task InsertLocalDirectoriesInfo(ICollection<LocalDirectoryInfo> directoriesInfo)
         {
+            //var mapper = BsonMapper.Global;
+            // mapper.Entity<LocalDirectoryInfo>()
+            //     .Ctor(x => new LocalDirectoryInfo(x[nameof(LocalDirectoryInfo.FullName)]));
+            
             if (directoriesInfo.Count <= 0)
             {
                 return;

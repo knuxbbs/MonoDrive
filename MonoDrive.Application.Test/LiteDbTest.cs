@@ -34,6 +34,16 @@ namespace MonoDrive.Application.Test
             await PrintCollectionSnapshot<LocalDirectoryInfo>();
         }
 
+        [Fact]
+        public void DeleteLocalDirectoriesInfo()
+        {
+            var collection = _dbFixture.Database.GetCollection(nameof(LocalDirectoryInfo));
+
+            var deleted = collection.DeleteAll();
+            
+            Assert.True(deleted > 0);
+        }
+
         private async Task PrintCollectionSnapshot<T>()
         {
             var collection = _dbFixture.Database.GetCollection<T>();
