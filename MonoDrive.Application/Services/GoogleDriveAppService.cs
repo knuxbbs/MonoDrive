@@ -13,7 +13,6 @@ using LiteDB.Async;
 using Microsoft.Extensions.Logging;
 using MonoDrive.Application.Interfaces;
 using MonoDrive.Application.Models;
-using GoogleDriveFile = Google.Apis.Drive.v3.Data.File;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace MonoDrive.Application.Services
@@ -65,18 +64,22 @@ namespace MonoDrive.Application.Services
 
             var stopwatch = Stopwatch.StartNew();
 
-            //Pastas compartilhadas são retornadas como órfãs
-            remoteDirectories = remoteDirectories.Where(x => x.Parents != null).ToArray();
-
             //A pasta raíz não é retornada pela consulta de diretórios
             var rootDirectoryId = await GetRootRemoteDirectoryId(cancellationToken);
 
-            var newDirectories = await FilterNewRemoteDirectories(remoteDirectories, rootDirectoryId);
+            //Pastas compartilhadas são retornadas como órfãs
+            remoteDirectories = remoteDirectories.Where(x => x.Parents != null).ToArray();
 
-            var directoriesInfo = CreateDirectories(parentDirectoryPath, newDirectories.ToArray());
+            var collection = _liteDatabaseAsync.GetCollection<LocalDirectoryInfo>();
+            var localDirectoriesInfo = await collection.Query().ToListAsync();
+
+            var newDirectories = FilterNewRemoteDirectories(localDirectoriesInfo, remoteDirectories);
+
+            var directoriesInfo =
+                CreateDirectories(parentDirectoryPath, rootDirectoryId, localDirectoriesInfo, newDirectories);
 
             //TODO: Remover diretórios excluídos do servidor remoto
-            await SaveLocalDirectoriesInfo(directoriesInfo);
+            await InsertLocalDirectoriesInfo(directoriesInfo);
 
             //var directoriesInfo = parentDirectoryInfo.GetDirectories("*.*", SearchOption.AllDirectories);
 
@@ -85,7 +88,7 @@ namespace MonoDrive.Application.Services
                 directoriesInfo.Count, stopwatch.Elapsed.Milliseconds);
         }
 
-        private async Task SaveLocalDirectoriesInfo(ICollection<LocalDirectoryInfo> directoriesInfo)
+        private async Task InsertLocalDirectoriesInfo(ICollection<LocalDirectoryInfo> directoriesInfo)
         {
             if (directoriesInfo.Count <= 0)
             {
@@ -98,54 +101,26 @@ namespace MonoDrive.Application.Services
             await collection.InsertBulkAsync(directoriesInfo);
         }
 
-        private List<LocalDirectoryInfo> CreateDirectories(string parentDirectoryPath,
-            ICollection<GoogleDriveFile> remoteDirectories)
+        private static List<LocalDirectoryInfo> CreateDirectories(string parentDirectoryPath, string rootDirectoryId,
+            ICollection<LocalDirectoryInfo> localDirectoriesInfo,
+            ICollection<GoogleDriveFileMetadata> remoteDirectories)
         {
-            var directoriesInfo = new List<LocalDirectoryInfo>();
+            var builder = new DirectoryTreeBuilder(parentDirectoryPath, rootDirectoryId, remoteDirectories);
+            var root = builder.Root;
 
-            void CreateDirectory(GoogleDriveFile remoteDirectory, string localPath)
+            root.Traverse(x =>
             {
-                var localDirectoryPath = Path.Combine(localPath, remoteDirectory.Name);
+                x.Create();
+            });
 
-                var directoryInfo = new DirectoryInfo(localDirectoryPath);
-                directoryInfo.Create();
-                directoriesInfo.Add(new LocalDirectoryInfo
-                {
-                    Attributes = directoryInfo.Attributes,
-                    Exists = directoryInfo.Exists,
-                    FullName = directoryInfo.FullName,
-                    CreationTimeUtc = directoryInfo.CreationTimeUtc,
-                    LastWriteTimeUtc = directoryInfo.LastWriteTimeUtc,
-                    LastAccessTimeUtc = directoryInfo.LastAccessTimeUtc,
-                    RemoteId = remoteDirectory.Id,
-                    ParentRemoteId = remoteDirectory.Parents[0]
-                });
-
-                var childrenDirectories = remoteDirectories.Where(y => y.Parents.Contains(remoteDirectory.Id));
-
-                foreach (var directory in childrenDirectories)
-                {
-                    CreateDirectory(directory, localDirectoryPath);
-                }
-            }
-
-            foreach (var directory in remoteDirectories)
-            {
-                CreateDirectory(directory, parentDirectoryPath);
-            }
-
-            return directoriesInfo;
+            return root.Flatten().ToList();
         }
 
-        private async Task<IEnumerable<GoogleDriveFile>> FilterNewRemoteDirectories(
-            IEnumerable<GoogleDriveFile> remoteDirectories, string rootDirectoryId)
+        private static IList<GoogleDriveFileMetadata> FilterNewRemoteDirectories(
+            IEnumerable<LocalDirectoryInfo> localDirectoriesInfo,
+            IEnumerable<GoogleDriveFileMetadata> remoteDirectories)
         {
-            var rootChildren = remoteDirectories.Where(x => x.Parents.Contains(rootDirectoryId));
-
-            var collection = _liteDatabaseAsync.GetCollection<LocalDirectoryInfo>();
-            var localDirectoriesInfo = await collection.FindAllAsync();
-
-            return rootChildren.Where(x => localDirectoriesInfo.All(y => y.RemoteId != x.Id));
+            return remoteDirectories.Where(x => localDirectoriesInfo.All(y => y.RemoteId != x.Id)).ToArray();
         }
 
         private async Task<string> GetRootRemoteDirectoryId(CancellationToken cancellationToken = default)
@@ -170,7 +145,7 @@ namespace MonoDrive.Application.Services
         /// Baixa estrutura de diretórios 
         /// </summary>
         /// <returns></returns>
-        private async Task<IList<GoogleDriveFile>> GetRemoteDirectoriesTree(
+        private async Task<IList<GoogleDriveFileMetadata>> GetRemoteDirectoriesTree(
             CancellationToken cancellationToken = default)
         {
             var stopwatch = Stopwatch.StartNew();
@@ -184,7 +159,7 @@ namespace MonoDrive.Application.Services
 
             listRequest.Q = query.ToString();
 
-            var files = new List<GoogleDriveFile>();
+            var files = new List<GoogleDriveFileMetadata>();
             FileList fileList = null;
 
             while (fileList == null || !string.IsNullOrWhiteSpace(fileList.NextPageToken))
@@ -197,7 +172,12 @@ namespace MonoDrive.Application.Services
                 fileList = await listRequest.ExecuteAsync(cancellationToken);
                 cancellationToken.ThrowIfCancellationRequested();
 
-                files.AddRange(fileList.Files);
+                files.AddRange(fileList.Files.Select(x => new GoogleDriveFileMetadata
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Parents = x.Parents
+                }));
             }
 
             _logger.LogInformation(
